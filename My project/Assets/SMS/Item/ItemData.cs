@@ -31,6 +31,7 @@ public class ItemData : ScriptableObject
     public string itemName; //아이템 이름
     public SMS_ItemType itemType;   //아이템 타입
     public Sprite itemIcon;  //아이템 아이콘
+    public GameObject dropPrefab;   //드랍될 아이템 프리펩
 
     [Header("상점 구매 설정")]
     public int buyPrice;    //구매가

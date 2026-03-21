@@ -15,7 +15,8 @@ MonoBehaviour:
   ItemID: S_01
   itemName: "\uC300 \uC528\uC557"
   itemType: 1
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: -1102886593, guid: 19de471ec8e70ba418cdc18ac63ae945, type: 3}
+  dropPrefab: {fileID: 8298267854607881310, guid: c67b9b7e3f9a8af409ee3a30ea19e653, type: 3}
   buyPrice: 10
   buyAmount: 1
   yeldItem: {fileID: 11400000, guid: 5b4af1d811b950440bd30ae8e06b7077, type: 2}

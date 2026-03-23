@@ -45,3 +45,5 @@ public class ItemData : ScriptableObject
     [Header("물고기 전용 데이터::Fish")]
     public SMS_FishSize fishSize;    //물고기 사이즈
 }
+
+

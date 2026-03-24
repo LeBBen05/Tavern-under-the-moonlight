@@ -23,8 +23,8 @@ public class FishingMinigame : MonoBehaviour
     public float hitMargin = 1.2f;     // 판정 범위 배율 (1.2는 바 크기의 120%까지 인정)
 
     [Header("물고기 AI 설정")]
-    public float fishMoveSpeed = 3f;   // 물고기가 움직이는 부드러움 (높을수록 빠름)
-    public Vector2 fishWaitTime = new Vector2(0.5f, 2.0f); // 목적지 변경 시간 (최소, 최대)
+    public float fishMoveSpeed;   // 물고기가 움직이는 부드러움 (높을수록 빠름)
+    public Vector2 fishWaitTime; // 목적지 변경 시간 (최소, 최대)
 
     [Header("시작 설정")]
     [Range(0f, 1f)]
@@ -42,6 +42,12 @@ public class FishingMinigame : MonoBehaviour
     // 이 오브젝트(또는 부모)가 다시 활성화될 때마다 실행됨
     private void OnEnable()
     {
+        ///<summary>
+        ///
+        /// </summary>
+        fishMoveSpeed = currentFishData.MoveSpeed;
+        fishWaitTime = currentFishData.WaitTime;
+
         // 1. 게이지 초기화 (아까 설정한 0.5f 또는 startGaugeAmount)
         if (successSlider != null)
         {

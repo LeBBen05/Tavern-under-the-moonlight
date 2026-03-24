@@ -23,3 +23,5 @@ MonoBehaviour:
   harvestAmount: 0
   growMinutes: 0
   fishSize: 1
+  MoveSpeed: 3
+  WaitTime: {x: 1, y: 3}

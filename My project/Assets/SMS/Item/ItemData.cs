@@ -44,6 +44,10 @@ public class ItemData : ScriptableObject
 
     [Header("물고기 전용 데이터::Fish")]
     public SMS_FishSize fishSize;    //물고기 사이즈
+    public float MoveSpeed;   // 물고기가 움직이는 부드러움 (높을수록 빠름)
+    public Vector2 WaitTime = new Vector2(); // 목적지 변경 시간 (최소, 최대)
+
 }
+
 
 

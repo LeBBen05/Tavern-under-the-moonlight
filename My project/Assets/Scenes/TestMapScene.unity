@@ -530,8 +530,8 @@ MonoBehaviour:
   fishIcon: {fileID: 400441892}
   successSlider: {fileID: 947624932}
   panelHeight: 400
-  gravity: 400
-  jumpForce: 600
+  gravity: 1000
+  jumpForce: 2000
   maxSpeed: 500
   winSpeed: 0.8
   loseSpeed: 0.1
@@ -614,7 +614,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 250}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 100, y: 30}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &400441893
 MonoBehaviour:
@@ -39199,7 +39199,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 900cb289cb6ed244f93635606f390522, type: 2}
   - {fileID: 11400000, guid: a8d87be6af6a11149bbcc6d389928ad8, type: 2}
   - {fileID: 11400000, guid: bf27845654ac5b542b8243c40d89b006, type: 2}
-  - {fileID: 11400000, guid: 5b49386a122630341b43276b17fa56d2, type: 2}
+  - {fileID: 11400000, guid: bf27845654ac5b542b8243c40d89b006, type: 2}
 --- !u!61 &1146662812
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -39649,7 +39649,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 30}
+  m_SizeDelta: {x: 100, y: 80}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1529611261
 MonoBehaviour:

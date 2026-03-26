@@ -9,7 +9,7 @@ public class FishingMinigame : MonoBehaviour
     [SerializeField] private Slider successSlider;      // 성공 게이지 슬라이더
 
     [Header("Physics Settings")]
-    public float panelHeight = 400f;   // 미니게임 배경 패널의 세로 길이
+    public float panelHeight = 1000f;   // 미니게임 배경 패널의 세로 길이
     public float gravity = 800f;       // 아래로 떨어지는 중력 수치
     public float jumpForce = 900f;     // 클릭 시 발생하는 상승 수치
     public float maxSpeed = 500f;      // 이동 속도의 최대 제한값

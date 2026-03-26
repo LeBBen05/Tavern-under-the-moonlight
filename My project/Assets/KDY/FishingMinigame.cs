@@ -3,35 +3,29 @@ using UnityEngine.UI;
 
 public class FishingMinigame : MonoBehaviour
 {
-    [Header("UI 연결 (Hierarchy에서 드래그)")]
-    public RectTransform playerBar;    // PlayerBar 오브젝트
-    public RectTransform fishIcon;    // FishIcon 오브젝트
-    public Slider successSlider;      // SuccessGauge 오브젝트
+    [Header("UI Reference")]
+    [SerializeField] private RectTransform playerBar;    // 플레이어가 조종하는 바 (Green Bar)
+    [SerializeField] private RectTransform fishIcon;    // 추격 대상인 물고기 아이콘 (Red Icon)
+    [SerializeField] private Slider successSlider;      // 성공 게이지 슬라이더
 
-    [Header("물리 설정 (조작감)")]
-    public float panelHeight = 400f;   // 배경 패널의 세로 높이
-    public float gravity = 800f;       // 아래로 떨어지는 힘
-    public float jumpForce = 900f;     // 클릭 시 튀어오르는 힘
-    public float maxSpeed = 500f;      // 바의 최대 이동 속도 제한
+    [Header("Physics Settings")]
+    public float panelHeight = 400f;   // 미니게임 배경 패널의 세로 길이
+    public float gravity = 800f;       // 아래로 떨어지는 중력 수치
+    public float jumpForce = 900f;     // 클릭 시 발생하는 상승 수치
+    public float maxSpeed = 500f;      // 이동 속도의 최대 제한값
 
-    [Header("난이도 설정 (손맛 조절)")]
-    [Range(0.1f, 2f)]
-    public float winSpeed = 0.5f;      // 게이지 상승 속도 (높을수록 쉬움)
-    [Range(0.1f, 2f)]
-    public float loseSpeed = 0.2f;     // 게이지 하락 속도 (낮을수록 쉬움)
-    [Range(1.0f, 2.0f)]
-    public float hitMargin = 1.2f;     // 판정 범위 배율 (1.2는 바 크기의 120%까지 인정)
+    [Header("Difficulty Settings")]
+    [Range(0.1f, 2f)] public float winSpeed = 0.5f;     // 바 안에 있을 때 게이지 상승 속도
+    [Range(0.1f, 2f)] public float loseSpeed = 0.2f;    // 바 밖에 있을 때 게이지 하락 속도
+    [Range(1.0f, 2.0f)] public float hitMargin = 1.2f;  // 판정 범위 배율 (기본 바 크기의 n배)
 
-    [Header("물고기 AI 설정")]
-    public float fishMoveSpeed;   // 물고기가 움직이는 부드러움 (높을수록 빠름)
-    public Vector2 fishWaitTime; // 목적지 변경 시간 (최소, 최대)
+    [Header("Fish AI (Loaded from ItemData)")]
+    public float fishMoveSpeed;         // 물고기의 민첩성 (이동 속도)
+    public Vector2 fishWaitTime;        // 다음 목적지로 이동할 때까지의 대기 시간(Min, Max)
 
-    [Header("시작 설정")]
-    [Range(0f, 1f)]
-    public float startGaugeAmount = 0.5f; // 인스펙터에서 슬라이더로 조절 가능
-
-    [Header("현재 잡을 물고기 정보")]
-    public ItemData currentFishData; // 팀원이 만든 스크립트 이름이 ItemData라면!
+    [Header("Game State")]
+    public float startGaugeAmount = 0.5f; // 게임 시작 시 초기 게이지 위치
+    public ItemData currentFishData;      // 현재 낚시 중인 물고기 정보 
 
     private float playerBarVelocity;
     private float playerBarPos;
@@ -39,73 +33,75 @@ public class FishingMinigame : MonoBehaviour
     private float fishDestination;
     private float fishTimer;
 
-    // 이 오브젝트(또는 부모)가 다시 활성화될 때마다 실행됨
+    /// <summary>
+    /// 게임 오브젝트가 활성화될 때마다 실행되는 초기화 함수.
+    /// </summary>
     private void OnEnable()
     {
-        ///<summary>
-        ///
-        /// </summary>
-        fishMoveSpeed = currentFishData.MoveSpeed;
-        fishWaitTime = currentFishData.WaitTime;
-
-        // 1. 게이지 초기화 (아까 설정한 0.5f 또는 startGaugeAmount)
-        if (successSlider != null)
+        // 1. 데이터 연동 및 방어 코드 
+        if (currentFishData != null)
         {
-            successSlider.value = 0.5f;
+         
+            fishMoveSpeed = currentFishData.MoveSpeed;
+            fishWaitTime = currentFishData.WaitTime;
+            Debug.Log($"<color=cyan>{currentFishData.itemName}</color> 데이터를 로드했습니다.");
+        }
+        else
+        {
+            // 데이터가 없을 경우 에러 방지를 위해 기본값 할당
+            Debug.LogWarning("전달된 물고기 데이터가 없어 기본 난이도로 시작합니다.");
+            fishMoveSpeed = 3f;
+            fishWaitTime = new Vector2(0.5f, 2.0f);
         }
 
-        // 2. 플레이어 바 위치 초기화 (바닥으로)
-        playerBarPos = playerBar.rect.height / 2;
-        playerBarVelocity = 0f;
+        // 2. 물리 및 게이지 상태 리셋
+        ResetGame();
 
-        // 3. 물고기 위치 및 타이머 초기화
-        fishPos = 20f;
-        fishTimer = 0f;
-
-        // 4. 스크립트 다시 작동시키기
         this.enabled = true;
-
-        Debug.Log("낚시 준비 완료! 다시 시작합니다.");
     }
 
-    void Start()
+    private void Start()
     {
-        // 시작 시 바닥 위치로 초기화
-        playerBarPos = playerBar.rect.height / 2;
-        successSlider.value = startGaugeAmount; // 설정한 값으로 시작
+        ResetGame();
     }
 
-    void Update()
+    private void Update()
     {
         HandlePlayerInput();
         HandleFishAI();
         CheckWinLoss();
     }
 
+    /// <summary>
+    /// 플레이어의 키 입력(마우스, 스페이스바)에 따른 바의 움직임을 제어합니다.
+    /// </summary>
     void HandlePlayerInput()
     {
-        // 1. 입력 감지 (마우스 왼쪽 버튼 또는 스페이스바)
+        // 1. 입력 감지 및 속도 계산
         if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space))
         {
-            playerBarVelocity += jumpForce * Time.deltaTime;
+            // deltaTime을 한 번만 곱해서 가속도를 더 확실하게 줍니다.
+            playerBarVelocity += jumpForce * Time.deltaTime * 10f;
         }
         else
         {
-            playerBarVelocity -= gravity * Time.deltaTime;
+            playerBarVelocity -= gravity * Time.deltaTime * 10f;
         }
 
         // 2. 물리 계산 및 제한
         playerBarVelocity = Mathf.Clamp(playerBarVelocity, -maxSpeed, maxSpeed);
         playerBarPos += playerBarVelocity * Time.deltaTime;
 
+        // 경계 제한 (패널 밖으로 나가지 않게)
         float halfBar = playerBar.rect.height / 2;
-        if (playerBarPos < halfBar) { playerBarPos = halfBar; playerBarVelocity = 0; }
-        if (playerBarPos > panelHeight - halfBar) { playerBarPos = panelHeight - halfBar; playerBarVelocity = 0; }
+        playerBarPos = Mathf.Clamp(playerBarPos, halfBar, panelHeight - halfBar);
 
-        // 3. UI 반영
         playerBar.anchoredPosition = new Vector2(0, playerBarPos);
     }
 
+    /// <summary>
+    /// 물고기가 일정 시간마다 새로운 위치로 부드럽게 이동하게 만드는 AI 로직입니다.
+    /// </summary>
     void HandleFishAI()
     {
         fishTimer -= Time.deltaTime;
@@ -115,49 +111,63 @@ public class FishingMinigame : MonoBehaviour
             fishDestination = Random.Range(15f, panelHeight - 15f);
         }
 
-        // Lerp를 이용해 부드럽게 이동
+        // Lerp를 사용하여 지정된 속도만큼 부드럽게 이동
         fishPos = Mathf.Lerp(fishPos, fishDestination, Time.deltaTime * fishMoveSpeed);
         fishIcon.anchoredPosition = new Vector2(0, fishPos);
     }
 
+    /// <summary>
+    /// 플레이어 바와 물고기의 거리를 체크하여 성공/실패 여부를 판단합니다.
+    /// </summary>
     void CheckWinLoss()
     {
         float distance = Mathf.Abs(playerBarPos - fishPos);
-        // 판정 범위 계산 (플레이어 바 높이의 절반 * 보너스 배율)
         float threshold = (playerBar.rect.height / 2) * hitMargin;
 
         if (distance < threshold)
-        {
             successSlider.value += winSpeed * Time.deltaTime;
-        }
         else
-        {
             successSlider.value -= loseSpeed * Time.deltaTime;
-        }
 
-        // 결과 처리
+        // 최종 판정
         if (successSlider.value >= 1f)
         {
-            Debug.Log("<color=green>" + currentFishData.itemName + "을(를) 낚았습니다!</color>");
+            string name = currentFishData != null ? currentFishData.itemName : "물고기";
+            Debug.Log($"<color=green>{name} 포획 성공!</color>");
             FinishGame();
         }
         else if (successSlider.value <= 0f)
         {
-            Debug.Log("<color=red>ㅠㅠ 물고기가 도망갔습니다 ㅠㅠ</color>");
-            FinishGame(); // 게임 종료 함수 호출
+            Debug.Log("<color=red>물고기를 놓쳤습니다.</color>");
+            FinishGame();
         }
     }
-    // 게임을 종료하고 화면을 끄는 함수
+
+    /// <summary>
+    /// 게임 시작 시 필요한 모든 수치를 초기 상태로 되돌리고 UI에 즉시 반영합니다.
+    /// </summary>
+    void ResetGame()
+    {
+        if (successSlider != null) successSlider.value = startGaugeAmount;
+
+        // 1. 위치 수치 초기화
+        playerBarPos = playerBar.rect.height / 2;
+        playerBarVelocity = 0f;
+        fishPos = 20f;
+        fishTimer = 0f;
+
+        // 2. ★ 중요: 초기화된 위치를 실제 UI 좌표에 즉시 적용
+        // 이 코드가 없으면 첫 프레임에서 바가 0,0 좌표에 박혀있을 수 있습니다.
+        playerBar.anchoredPosition = new Vector2(0, playerBarPos);
+        fishIcon.anchoredPosition = new Vector2(0, fishPos);
+    }
+
+    /// <summary>
+    /// 게임을 종료하고 미니게임 캔버스를 비활성화합니다.
+    /// </summary>
     void FinishGame()
     {
-        // 1. 현재 스크립트 비활성화 (중복 실행 방지)
         this.enabled = false;
-
-        // 2. 낚시 UI 전체(Canvas)를 찾아 끄기
-        // 만약 스크립트가 Panel에 붙어있다면 transform.parent.gameObject를 꺼야 캔버스가 꺼집니다.
-        // 가장 확실한 방법은 최상위 부모인 Canvas를 비활성화하는 것입니다.
         transform.root.gameObject.SetActive(false);
-
-        // 참고: transform.root는 계층 구조의 최상위(Canvas)를 찾아줍니다.
     }
 }

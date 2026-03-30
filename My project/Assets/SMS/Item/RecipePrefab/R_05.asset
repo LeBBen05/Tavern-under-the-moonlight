@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: R_05
   m_EditorClassIdentifier: 
   recipeID: R_05
-  recipeName: "\uD30C\uC804"
+  recipeName: "\uB2F9\uADFC\uC804"
   reicpeIcon: {fileID: 0}
   sellPrice: 16
   servingCount: 3

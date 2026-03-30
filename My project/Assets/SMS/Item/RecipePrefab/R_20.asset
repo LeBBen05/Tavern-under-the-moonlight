@@ -10,27 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: R_18
+  m_Name: R_20
   m_EditorClassIdentifier: 
-  recipeID: R_18
-  recipeName: "\uB9E4\uC6B4\uD0D5"
+  recipeID: R_20
+  recipeName: "\uC601\uC591 \uCC30\uB5A1"
   reicpeIcon: {fileID: 0}
-  sellPrice: 50
-  servingCount: 5
+  sellPrice: 55
+  servingCount: 3
   ingredients:
-  - rcqType: 1
-    requriedItem: {fileID: 0}
-    RfishSize: 2
+  - rcqType: 0
+    requriedItem: {fileID: 11400000, guid: 2c7152f821fb73c438f1c7f844350f5e, type: 2}
+    RfishSize: 0
     amount: 1
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 723089afc7f57ad4b92b6dc0839f33b5, type: 2}
+    requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
     RfishSize: 0
-    amount: 2
+    amount: 1
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: cc400609548989b4ea5a622e99898786, type: 2}
-    RfishSize: 0
-    amount: 2
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: ff697622673ccee4b9811c7ca3ae83f9, type: 2}
+    requriedItem: {fileID: 11400000, guid: dfd17abf45a540f41bb7dc3402b21d08, type: 2}
     RfishSize: 0
     amount: 1

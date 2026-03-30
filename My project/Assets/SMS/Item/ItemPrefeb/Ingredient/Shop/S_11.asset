@@ -16,10 +16,12 @@ MonoBehaviour:
   itemName: "\uB3FC\uC9C0\uACE0\uAE30"
   itemType: 2
   itemIcon: {fileID: -1729922475, guid: 338eb9325b511bf4dbf0184fff5f5d9c, type: 3}
-  dropPrefab: {fileID: 0}
+  dropPrefab: {fileID: 5177466777897172185, guid: 035ca350c9756284998940266649e203, type: 3}
   buyPrice: 100
   buyAmount: 3
   yeldItem: {fileID: 0}
   harvestAmount: 0
   growMinutes: 0
   fishSize: 0
+  MoveSpeed: 0
+  WaitTime: {x: 0, y: 0}

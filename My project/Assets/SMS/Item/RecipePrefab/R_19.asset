@@ -13,24 +13,12 @@ MonoBehaviour:
   m_Name: R_19
   m_EditorClassIdentifier: 
   recipeID: R_19
-  recipeName: "\uC5B4\uC8FD"
+  recipeName: "\uD638\uBC15\uC8FD"
   reicpeIcon: {fileID: 0}
-  sellPrice: 52
-  servingCount: 5
+  sellPrice: 20
+  servingCount: 3
   ingredients:
-  - rcqType: 1
-    requriedItem: {fileID: 0}
+  - rcqType: 0
+    requriedItem: {fileID: 11400000, guid: dfd17abf45a540f41bb7dc3402b21d08, type: 2}
     RfishSize: 1
-    amount: 0
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
-    RfishSize: 0
-    amount: 1
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 723089afc7f57ad4b92b6dc0839f33b5, type: 2}
-    RfishSize: 0
-    amount: 3
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 5b4af1d811b950440bd30ae8e06b7077, type: 2}
-    RfishSize: 0
     amount: 1

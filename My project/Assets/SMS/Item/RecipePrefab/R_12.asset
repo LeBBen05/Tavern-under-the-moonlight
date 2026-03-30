@@ -13,20 +13,16 @@ MonoBehaviour:
   m_Name: R_12
   m_EditorClassIdentifier: 
   recipeID: R_12
-  recipeName: "\uAD6D\uBC25"
+  recipeName: "\uAC00\uC9C0 \uBCF6\uC74C"
   reicpeIcon: {fileID: 0}
-  sellPrice: 22
-  servingCount: 5
+  sellPrice: 24
+  servingCount: 2
   ingredients:
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 5b4af1d811b950440bd30ae8e06b7077, type: 2}
+    requriedItem: {fileID: 11400000, guid: 1085a749bd7a00e4fb5d6454cbc02ec9, type: 2}
     RfishSize: 0
     amount: 1
   - rcqType: 0
     requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
     RfishSize: 0
     amount: 1
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: cc400609548989b4ea5a622e99898786, type: 2}
-    RfishSize: 0
-    amount: 3

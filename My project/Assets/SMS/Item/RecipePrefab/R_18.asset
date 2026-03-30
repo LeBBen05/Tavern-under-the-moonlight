@@ -31,6 +31,6 @@ MonoBehaviour:
     RfishSize: 0
     amount: 2
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 1085a749bd7a00e4fb5d6454cbc02ec9, type: 2}
+    requriedItem: {fileID: 11400000, guid: ff697622673ccee4b9811c7ca3ae83f9, type: 2}
     RfishSize: 0
     amount: 1

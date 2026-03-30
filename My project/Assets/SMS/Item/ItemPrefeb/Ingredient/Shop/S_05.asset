@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: S_05
   m_EditorClassIdentifier: 
   ItemID: S_05
-  itemName: "\uBB34 \uC528\uC557"
+  itemName: "\uC591\uD30C \uC528\uC557"
   itemType: 2
-  itemIcon: {fileID: 0}
-  buyPrice: 25
+  itemIcon: {fileID: 2015505253, guid: 19de471ec8e70ba418cdc18ac63ae945, type: 3}
+  dropPrefab: {fileID: 8298267854607881310, guid: e7e03c4b394c677418263963afdee4b2, type: 3}
+  buyPrice: 65
   buyAmount: 1
-  yeldItem: {fileID: 11400000, guid: 0758fb1b2cbf6c2459d04eb376ccb092, type: 2}
-  harvestAmount: 1
-  growMinutes: 45
+  yeldItem: {fileID: 11400000, guid: cc400609548989b4ea5a622e99898786, type: 2}
+  harvestAmount: 5
+  growMinutes: 55
   fishSize: 0
+  MoveSpeed: 0
+  WaitTime: {x: 0, y: 0}

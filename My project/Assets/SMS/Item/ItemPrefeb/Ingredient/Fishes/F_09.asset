@@ -15,8 +15,13 @@ MonoBehaviour:
   ItemID: F_09
   itemName: "\uC1A1\uC5B4"
   itemType: 2
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: -1166393622, guid: 338eb9325b511bf4dbf0184fff5f5d9c, type: 3}
+  dropPrefab: {fileID: 2354841358703710933, guid: 370ebc0a8a916ec4da33e585834e3a57, type: 3}
   buyPrice: 0
+  buyAmount: 1
+  yeldItem: {fileID: 0}
   harvestAmount: 0
   growMinutes: 0
   fishSize: 3
+  MoveSpeed: 4
+  WaitTime: {x: 0.5, y: 1.5}

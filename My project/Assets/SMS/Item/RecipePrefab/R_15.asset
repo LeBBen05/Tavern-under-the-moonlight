@@ -15,7 +15,7 @@ MonoBehaviour:
   recipeID: R_15
   recipeName: "\uC7A5\uC5B4 \uC591\uB150 \uAD6C\uC774"
   reicpeIcon: {fileID: 0}
-  sellPrice: 36
+  sellPrice: 40
   servingCount: 3
   ingredients:
   - rcqType: 0
@@ -27,6 +27,6 @@ MonoBehaviour:
     RfishSize: 0
     amount: 2
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 723089afc7f57ad4b92b6dc0839f33b5, type: 2}
+    requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
     RfishSize: 0
     amount: 2

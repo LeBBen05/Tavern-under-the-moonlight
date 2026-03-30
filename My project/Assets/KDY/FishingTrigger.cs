@@ -6,34 +6,37 @@ public class FishingTrigger : MonoBehaviour
     public GameObject fishingCanvas;
 
     [Header("낚시터 물고기 목록")]
-    public ItemData[] fishPool; // 인스펙터에서 F_01, F_02 등을 넣어주세요.
+    public ItemData[] fishPool;
 
     private void OnMouseDown()
     {
-        if (fishingCanvas != null && fishPool.Length > 0) // fishPool이 비어있지 않은지 확인
+        // 1.이미 낚시 UI가 켜져 있다면 클릭을 무시합니다.
+        if (fishingCanvas != null && fishingCanvas.activeSelf)
         {
-            // 1. [추가] 물고기 목록 중 하나를 랜덤하게 선택합니다.
+            Debug.Log("이미 낚시 중입니다!");
+            return;
+        }
+
+        if (fishingCanvas != null && fishPool.Length > 0)
+        {
             int randomIndex = Random.Range(0, fishPool.Length);
             ItemData selectedFish = fishPool[randomIndex];
 
-            // 2. 미니게임 UI를 활성화합니다.
-            fishingCanvas.SetActive(true);
+            // 비활성화된 상태에서도 스크립트를 찾기 위해 (true) 사용
+            FishingMinigame game = fishingCanvas.GetComponentInChildren<FishingMinigame>(true);
 
-            // 3. 미니게임 스크립트를 찾아 정보를 전달합니다.
-            FishingMinigame game = fishingCanvas.GetComponentInChildren<FishingMinigame>();
             if (game != null)
             {
-                // [추가] 선택된 물고기 데이터를 미니게임 스크립트에 넘겨줍니다.
+                // 데이터를 먼저 셋팅하고 스크립트를 활성화 준비
                 game.currentFishData = selectedFish;
-
-                game.enabled = true;
+                game.enabled = false; // 확실히 껐다가 아래에서 켭니다.
             }
 
-            Debug.Log(selectedFish.itemName + "이(가) 입질을 보냅니다! 낚시 시작!");
-        }
-        else if (fishPool.Length == 0)
-        {
-            Debug.LogWarning("Fish Pool이 비어있습니다! 인스펙터에서 물고기 데이터를 넣어주세요.");
+            // 2. 이제 캔버스를 켜고 게임을 시작합니다.
+            fishingCanvas.SetActive(true);
+            if (game != null) game.enabled = true;
+
+            Debug.Log($"<color=cyan>{selectedFish.itemName}</color> 입질! 낚시를 시작합니다.");
         }
     }
 }

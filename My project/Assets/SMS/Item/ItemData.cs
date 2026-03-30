@@ -31,6 +31,7 @@ public class ItemData : ScriptableObject
     public string itemName; //아이템 이름
     public SMS_ItemType itemType;   //아이템 타입
     public Sprite itemIcon;  //아이템 아이콘
+    public GameObject dropPrefab;   //드랍될 아이템 프리펩
 
     [Header("상점 구매 설정")]
     public int buyPrice;    //구매가
@@ -43,4 +44,10 @@ public class ItemData : ScriptableObject
 
     [Header("물고기 전용 데이터::Fish")]
     public SMS_FishSize fishSize;    //물고기 사이즈
+    public float MoveSpeed;   // 물고기가 움직이는 부드러움 (높을수록 빠름)
+    public Vector2 WaitTime = new Vector2(); // 목적지 변경 시간 (최소, 최대)
+
 }
+
+
+

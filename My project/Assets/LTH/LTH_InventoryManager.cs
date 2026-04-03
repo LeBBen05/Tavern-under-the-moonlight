@@ -46,6 +46,7 @@ public class LTH_InventoryManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleInventory();
+            Debug.Log("¶¹À½");
         }
     }
 

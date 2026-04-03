@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: Napa Cabbage Pancake
+  m_Name: R04_potatoPancke
   m_EditorClassIdentifier: 
-  recipeID: R_11
-  recipeName: "\uBC30\uCD94"
+  recipeID: R_04
+  recipeName: "\uAC10\uC790\uC804"
   reicpeIcon: {fileID: 0}
-  sellPrice: 21
+  sellPrice: 16
   servingCount: 3
   ingredients:
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 7c444850b98803240a8021fb3fad05b6, type: 2}
+    requriedItem: {fileID: 11400000, guid: ff697622673ccee4b9811c7ca3ae83f9, type: 2}
     RfishSize: 0
     amount: 1
   - rcqType: 0

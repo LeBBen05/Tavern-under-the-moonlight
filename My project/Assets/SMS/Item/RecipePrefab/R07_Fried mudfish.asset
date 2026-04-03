@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: Dongchimi
+  m_Name: R07_Fried mudfish
   m_EditorClassIdentifier: 
-  recipeID: R_08
-  recipeName: "\uB3D9\uCE58\uBBF8"
+  recipeID: R_07
+  recipeName: "\uBBF8\uAFB8\uB77C\uC9C0 \uD280\uAE40"
   reicpeIcon: {fileID: 0}
-  sellPrice: 18
+  sellPrice: 16
   servingCount: 3
   ingredients:
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 0758fb1b2cbf6c2459d04eb376ccb092, type: 2}
+    requriedItem: {fileID: 11400000, guid: 9a35242ddfbdf984e9e004eecea52798, type: 2}
     RfishSize: 0
-    amount: 1
+    amount: 3
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 11cd2d2997a99f642a68239e342abeae, type: 2}
+    requriedItem: {fileID: 11400000, guid: 2c7152f821fb73c438f1c7f844350f5e, type: 2}
     RfishSize: 0
     amount: 1

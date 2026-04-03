@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: Grilled Eel with Seasoned Sauce
+  m_Name: R13_Napa Cabbage Soup
   m_EditorClassIdentifier: 
-  recipeID: R_15
-  recipeName: "\uC7A5\uC5B4 \uC591\uB150 \uAD6C\uC774"
+  recipeID: R_13
+  recipeName: "\uBC30\uCD94 \uB41C\uC7A5 \uCC0C\uAC1C"
   reicpeIcon: {fileID: 0}
-  sellPrice: 40
-  servingCount: 3
+  sellPrice: 23
+  servingCount: 5
   ingredients:
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: a8d87be6af6a11149bbcc6d389928ad8, type: 2}
+    requriedItem: {fileID: 11400000, guid: 7c444850b98803240a8021fb3fad05b6, type: 2}
+    RfishSize: 0
+    amount: 1
+  - rcqType: 0
+    requriedItem: {fileID: 11400000, guid: 34a96b105fcf04c4492786209940d2e1, type: 2}
     RfishSize: 0
     amount: 1
   - rcqType: 0
     requriedItem: {fileID: 11400000, guid: 723089afc7f57ad4b92b6dc0839f33b5, type: 2}
-    RfishSize: 0
-    amount: 2
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
     RfishSize: 0
     amount: 2

@@ -10,19 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: potatoPancke
+  m_Name: R03_sashimi
   m_EditorClassIdentifier: 
-  recipeID: R_04
-  recipeName: "\uAC10\uC790\uC804"
+  recipeID: R_03
+  recipeName: "\uD68C"
   reicpeIcon: {fileID: 0}
-  sellPrice: 16
-  servingCount: 3
+  sellPrice: 14
+  servingCount: 1
   ingredients:
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: ff697622673ccee4b9811c7ca3ae83f9, type: 2}
-    RfishSize: 0
-    amount: 1
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 2c7152f821fb73c438f1c7f844350f5e, type: 2}
-    RfishSize: 0
+  - rcqType: 1
+    requriedItem: {fileID: 0}
+    RfishSize: 3
     amount: 1

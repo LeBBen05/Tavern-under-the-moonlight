@@ -4,20 +4,26 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-#region 데이터 구조
-
 [System.Serializable]
 public class ItemImageData
 {
-    public ItemData item;          // 레시피용 ItemData
-    public SMS_FishSize fishSize;  // 물고기 크기
-    public Image image;            // Sprite를 가져오기 위한 UI 이미지
+    public ItemData item;
+    public SMS_FishSize fishSize;
+    public Image image;
 }
-
-#endregion
 
 public class CMJCookScene : MonoBehaviour
 {
+    [System.Serializable]
+    public class RecipeResultData
+    {
+        public RecipeData recipe;
+        public ItemData resultItem;
+    }
+
+    [Header("레시피 결과 연결")]
+    public RecipeResultData[] recipeResults;
+
     [Header("UI")]
     public GameObject ClickMenuUI;
     public GameObject AddButton;
@@ -51,14 +57,14 @@ public class CMJCookScene : MonoBehaviour
         AddButton.SetActive(isAliveAdd);
     }
 
-    //슬롯 클릭
+    // 슬롯 클릭
     public void OnClickSlot(int index)
     {
         selectedSlotIndex = index;
         iSAliveClick = true;
     }
 
-    //메뉴 클릭
+    // 메뉴 클릭
     public void MenuClick(int index)
     {
         if (index < 0 || index >= recipes.Length) return;
@@ -77,7 +83,7 @@ public class CMJCookScene : MonoBehaviour
         ShowRecipe(recipes[index]);
     }
 
-    //레시피 표시
+    // 레시피 UI 표시
     void ShowRecipe(RecipeData recipe)
     {
         ClearRecipeSlots();
@@ -89,17 +95,12 @@ public class CMJCookScene : MonoBehaviour
             recipeSlotImages[i].gameObject.SetActive(true);
 
             if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem)
-            {
                 recipeSlotImages[i].sprite = GetItemSprite(ing.requriedItem);
-            }
             else if (ing.rcqType == SMS_RecipeRequirementType.AnyFish)
-            {
                 recipeSlotImages[i].sprite = GetFishSprite(ing.RfishSize);
-            }
         }
     }
 
-    //슬롯 초기화
     void ClearRecipeSlots()
     {
         for (int i = 0; i < recipeSlotImages.Length; i++)
@@ -109,15 +110,12 @@ public class CMJCookScene : MonoBehaviour
         }
     }
 
-    //Sprite 가져오기
     Sprite GetItemSprite(ItemData item)
     {
         foreach (var data in itemImages)
         {
             if (data.item == item && data.image != null)
-            {
                 return data.image.sprite;
-            }
         }
         return null;
     }
@@ -127,62 +125,28 @@ public class CMJCookScene : MonoBehaviour
         foreach (var data in itemImages)
         {
             if (data.fishSize == size && data.image != null)
-            {
                 return data.image.sprite;
-            }
         }
         return null;
     }
 
-    ItemData ConvertItem(ItemData lthItem)
-    {
-        if (lthItem == null) return null;
-
-        foreach (var data in itemImages)
-        {
-            if (data == null || data.item == null) continue;
-
-            //핵심 수정: itemName 비교
-            if (data.item.itemName.Trim().ToLower() ==
-                lthItem.itemName.Trim().ToLower())
-            {
-                return data.item;
-            }
-        }
-
-        return null;
-    }
-
-    //아이템 개수 확인
+    // 아이템 개수 체크
     int GetItemCount(ItemData item)
     {
-
         int count = 0;
 
         foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
         {
-            if (ConvertItem(slot.itemData) == item)
+            if (slot.itemData == item)
             {
                 count += slot.currentCount;
             }
-            Debug.Log("인벤토리 아이템: " + slot.itemData.itemName);
-
-            ItemData converted = ConvertItem(slot.itemData);
-
-            if (converted == null) //테스트용 코드
-            {
-                Debug.LogError("매칭 실패!");
-            }
-            else
-            {
-                Debug.Log("매칭 성공: " + converted.itemName);
-            } //요까지
         }
 
         return count;
     }
 
-    //물고기 개수 확인
+    // 물고기 개수 체크
     int GetFishCount(SMS_FishSize size)
     {
         int count = 0;
@@ -191,9 +155,9 @@ public class CMJCookScene : MonoBehaviour
         {
             foreach (var data in itemImages)
             {
-                if (data.item != null &&
-                    ConvertItem(slot.itemData) == data.item &&
-                    data.fishSize == size)
+                if (data.item == null) continue;
+
+                if (slot.itemData == data.item && data.fishSize == size)
                 {
                     count += slot.currentCount;
                 }
@@ -203,7 +167,7 @@ public class CMJCookScene : MonoBehaviour
         return count;
     }
 
-    //제작 가능 여부
+    // 제작 가능 여부
     bool CanCook(RecipeData recipe)
     {
         foreach (var ing in recipe.ingredients)
@@ -222,7 +186,7 @@ public class CMJCookScene : MonoBehaviour
         return true;
     }
 
-    //재료 차감
+    // 재료 차감
     void ConsumeIngredients(RecipeData recipe)
     {
         foreach (var ing in recipe.ingredients)
@@ -231,9 +195,7 @@ public class CMJCookScene : MonoBehaviour
 
             foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
             {
-                // 특정 아이템
-                if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem &&
-                    ConvertItem(slot.itemData) == ing.requriedItem)
+                if (slot.itemData == ing.requriedItem)
                 {
                     int remove = Mathf.Min(need, slot.currentCount);
                     slot.ChangeCount(-remove);
@@ -241,29 +203,22 @@ public class CMJCookScene : MonoBehaviour
 
                     if (need <= 0) break;
                 }
-
-                // 물고기
-                else if (ing.rcqType == SMS_RecipeRequirementType.AnyFish)
-                {
-                    foreach (var data in itemImages)
-                    {
-                        if (data.item != null &&
-                            ConvertItem(slot.itemData) == data.item &&
-                            data.fishSize == ing.RfishSize)
-                        {
-                            int remove = Mathf.Min(need, slot.currentCount);
-                            slot.ChangeCount(-remove);
-                            need -= remove;
-
-                            if (need <= 0) break;
-                        }
-                    }
-                }
             }
         }
     }
 
-    //메뉴 추가
+    // 결과 아이템 찾기
+    ItemData GetResultItem(RecipeData recipe)
+    {
+        foreach (var data in recipeResults)
+        {
+            if (data.recipe == recipe)
+                return data.resultItem;
+        }
+        return null;
+    }
+
+    // 요리 실행
     public void Add()
     {
         if (currentMenuIndex < 0 || selectedSlotIndex < 0) return;
@@ -279,11 +234,24 @@ public class CMJCookScene : MonoBehaviour
         // 재료 차감
         ConsumeIngredients(recipe);
 
+        // 결과 생성
+        ItemData result = GetResultItem(recipe);
+
+        if (result != null)
+        {
+            LTH_InventoryManager.Instance.AddItem(
+                result,
+                recipe.servingCount
+            );
+        }
+        else
+        {
+            Debug.LogError("결과 아이템 연결 안됨!");
+        }
+
         // 메뉴판 표시
         slotTexts[selectedSlotIndex].text =
             recipe.recipeName + " x" + recipe.servingCount;
-
-        Debug.Log("요리 성공: " + recipe.recipeName);
 
         iSAliveClick = false;
         isAliveAdd = false;
@@ -294,7 +262,6 @@ public class CMJCookScene : MonoBehaviour
         ClearRecipeSlots();
     }
 
-    //뒤로가기
     public void Back()
     {
         iSAliveClick = false;
@@ -304,7 +271,6 @@ public class CMJCookScene : MonoBehaviour
         ClearRecipeSlots();
     }
 
-    // 씬 이동
     public void LoadScene()
     {
         if (!iSAliveClick)

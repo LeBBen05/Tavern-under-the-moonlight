@@ -34,6 +34,7 @@ public class ItemData : ScriptableObject
     public GameObject dropPrefab;   //드랍될 아이템 프리펩
 
     [Header("상점 구매 설정")]
+    public bool isSell = false;
     public int buyPrice;    //구매가
     public int buyAmount = 1;   //구매 양
 

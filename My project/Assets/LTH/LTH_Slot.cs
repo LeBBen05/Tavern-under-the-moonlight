@@ -53,6 +53,5 @@ public class LTH_Slot : MonoBehaviour
                 countText.text = currentCount.ToString();
             }
         }
-        // 만약 countText가 null이라면 아무 작업도 하지 않고 넘어가므로 에러가 발생하지 않습니다.
     }
 }

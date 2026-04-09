@@ -169,14 +169,14 @@ public class CMJCookScene : MonoBehaviour
 
             ItemData converted = ConvertItem(slot.itemData);
 
-            if (converted == null)
+            if (converted == null) //테스트용 코드
             {
                 Debug.LogError("매칭 실패!");
             }
             else
             {
                 Debug.Log("매칭 성공: " + converted.itemName);
-            }
+            } //요까지
         }
 
         return count;
@@ -273,14 +273,6 @@ public class CMJCookScene : MonoBehaviour
         if (!CanCook(recipe))
         {
             Debug.Log("재료 부족!");
-
-            iSAliveClick = false;
-            isAliveAdd = false;
-
-            currentMenuIndex = -1;
-            selectedSlotIndex = -1;
-
-            ClearRecipeSlots();
             return;
         }
 

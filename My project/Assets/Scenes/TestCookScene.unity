@@ -2422,7 +2422,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -8164,9 +8164,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -14, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &762516824
 MonoBehaviour:
@@ -45302,10 +45302,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d305987648ae43945836425e9590a89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryPanel: {fileID: 1923895736}
+  totalUIWindow: {fileID: 0}
+  inventoryContent: {fileID: 0}
+  recipeContent: {fileID: 0}
   contentParent: {fileID: 1621100791}
   slotPrefab: {fileID: 6850885496764491426, guid: 3a41240107a95c249bbe56c09b0fab7c, type: 3}
+  quickSlots: []
+  startingTools: []
+  playerHandRenderer: {fileID: 0}
   activeSlots: []
+  isInventoryOpen: 0
 --- !u!4 &1421788098
 Transform:
   m_ObjectHideFlags: 0
@@ -46297,7 +46303,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.00002034758}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1621100792
 MonoBehaviour:
@@ -46583,7 +46589,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1682124190
 RectTransform:
   m_ObjectHideFlags: 0

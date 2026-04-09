@@ -32,5 +32,13 @@ public class CMJCookB : MonoBehaviour
     {
         SceneManager.LoadScene("MainScene");
     }
+    public void CMJLoadScene3()
+    {
+        SceneManager.LoadScene("SampleScene");
+    }
+    public void OFFUI()
+    {
+        AllUI.SetActive(false);
+    }
 
 }

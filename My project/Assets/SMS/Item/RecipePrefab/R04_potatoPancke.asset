@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: potatoPancke
+  m_Name: R04_potatoPancke
   m_EditorClassIdentifier: 
   recipeID: R_04
   recipeName: "\uAC10\uC790\uC804"

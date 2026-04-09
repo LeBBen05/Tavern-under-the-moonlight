@@ -10,23 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: Stir-fry
+  m_Name: R09_Steamed fish
   m_EditorClassIdentifier: 
-  recipeID: R_10
-  recipeName: "\uACE0\uAE30 \uBCF6\uC74C"
+  recipeID: R_09
+  recipeName: "\uC0DD\uC120 \uCC1C"
   reicpeIcon: {fileID: 0}
-  sellPrice: 53
-  servingCount: 3
+  sellPrice: 12
+  servingCount: 5
   ingredients:
+  - rcqType: 1
+    requriedItem: {fileID: 0}
+    RfishSize: 1
+    amount: 3
   - rcqType: 0
     requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
     RfishSize: 0
-    amount: 1
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: c3147ac972ab5704ab87fa443868ea5f, type: 2}
-    RfishSize: 0
-    amount: 1
-  - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 1085a749bd7a00e4fb5d6454cbc02ec9, type: 2}
-    RfishSize: 0
-    amount: 1
+    amount: 2

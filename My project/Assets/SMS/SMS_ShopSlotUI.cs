@@ -32,7 +32,7 @@ public class SMS_ShopSlotUI : MonoBehaviour
 
     void OnClickBuy()
     {
-        shopManager.BuyItem(slotItemData, ItemData);
+        shopManager.BuyItem(slotItemData);
     }
 
 }

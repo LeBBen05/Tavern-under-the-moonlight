@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestCookScene.unity
     guid: cb7ca4c4deeee34448d938cf2c3c052c
+  - enabled: 1
+    path: Assets/Scenes/SampleScene 1.unity
+    guid: 4731073ead9fd6346aee276a6fac2054
   m_configObjects: {}

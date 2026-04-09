@@ -10,20 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: Seasoned Freshwater Minnow
+  m_Name: R10_Stir-fry
   m_EditorClassIdentifier: 
-  recipeID: R_14
-  recipeName: "\uD53C\uB798\uBBF8 \uBB34\uCE68"
+  recipeID: R_10
+  recipeName: "\uACE0\uAE30 \uBCF6\uC74C"
   reicpeIcon: {fileID: 0}
-  sellPrice: 24
+  sellPrice: 53
   servingCount: 3
   ingredients:
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 73680d64d6bb09941aeb53b53d2de63a, type: 2}
+    requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
     RfishSize: 0
-    amount: 3
+    amount: 1
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 723089afc7f57ad4b92b6dc0839f33b5, type: 2}
+    requriedItem: {fileID: 11400000, guid: c3147ac972ab5704ab87fa443868ea5f, type: 2}
+    RfishSize: 0
+    amount: 1
+  - rcqType: 0
+    requriedItem: {fileID: 11400000, guid: 1085a749bd7a00e4fb5d6454cbc02ec9, type: 2}
     RfishSize: 0
     amount: 1
   - rcqType: 0

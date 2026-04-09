@@ -3,8 +3,8 @@ using UnityEngine;
 public class LTH_InventoryTester : MonoBehaviour
 {
     // 유니티 인스펙터에서 미리 만든 ItemData 에셋들을 드래그해서 넣어주세요.
-    public LTH_ItemData potato;
-    public LTH_ItemData seed;
+    public ItemData potato;
+    public ItemData seed;
 
     void Update()
     {
@@ -31,7 +31,7 @@ public class LTH_InventoryTester : MonoBehaviour
     }
 
     // 인벤토리 매니저의 리스트를 뒤져서 해당 아이템의 수량을 깎는 함수
-    void UseItemFromInventory(LTH_ItemData targetItem, int amount)
+    void UseItemFromInventory(ItemData targetItem, int amount)
     {
         foreach (LTH_Slot slot in LTH_InventoryManager.Instance.activeSlots)
         {

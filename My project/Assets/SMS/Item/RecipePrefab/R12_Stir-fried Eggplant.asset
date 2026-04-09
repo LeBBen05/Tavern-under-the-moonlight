@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9406f7b8ec2a9134cb820cf4c0b7e4c0, type: 3}
-  m_Name: Napa Cabbage Pancake
+  m_Name: R12_Stir-fried Eggplant
   m_EditorClassIdentifier: 
-  recipeID: R_11
-  recipeName: "\uBC30\uCD94"
+  recipeID: R_12
+  recipeName: "\uAC00\uC9C0 \uBCF6\uC74C"
   reicpeIcon: {fileID: 0}
-  sellPrice: 21
-  servingCount: 3
+  sellPrice: 24
+  servingCount: 2
   ingredients:
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 7c444850b98803240a8021fb3fad05b6, type: 2}
+    requriedItem: {fileID: 11400000, guid: 1085a749bd7a00e4fb5d6454cbc02ec9, type: 2}
     RfishSize: 0
     amount: 1
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 2c7152f821fb73c438f1c7f844350f5e, type: 2}
+    requriedItem: {fileID: 11400000, guid: ead18a852177043469b50a33960117be, type: 2}
     RfishSize: 0
     amount: 1

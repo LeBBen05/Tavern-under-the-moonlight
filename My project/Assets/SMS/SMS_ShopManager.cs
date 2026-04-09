@@ -96,7 +96,7 @@ public class SMS_ShopManager : MonoBehaviour
     /// </summary>
     /// <param name="item">상점 슬롯에 추가될 아이템 데이터</param>
     /// <param name="Initem">인벤토리에 실제로 들어갈 아이템 데이터</param>
-    public void BuyItem(ItemData item, LTH_ItemData Initem)
+    public void BuyItem(ItemData item)
     {
         if (playerMoney >= item.buyPrice)
         {
@@ -104,7 +104,7 @@ public class SMS_ShopManager : MonoBehaviour
 
             if (LTH_InventoryManager.Instance != null)
             {
-                LTH_InventoryManager.Instance.AddItem(Initem, item.buyAmount);
+                LTH_InventoryManager.Instance.AddItem(item, item.buyAmount);
                 Debug.Log($"{item.itemName} 구매 완료! 남은 돈: {playerMoney}");
 
             }

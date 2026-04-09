@@ -30,7 +30,7 @@ public class CMJCookB : MonoBehaviour
     }
     public void CMJLoadScene2()
     {
-        SceneManager.LoadScene("SampleScene 1");
+        SceneManager.LoadScene("MainScene");
     }
 
 }

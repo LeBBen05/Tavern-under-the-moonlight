@@ -4,7 +4,7 @@ using TMPro;
 
 public class LTH_Slot : MonoBehaviour
 {
-    public LTH_ItemData itemData;
+    public ItemData itemData;
     public int currentCount;
 
     [Header("UI References")]
@@ -12,11 +12,11 @@ public class LTH_Slot : MonoBehaviour
     public TextMeshProUGUI countText;
 
     // 슬롯 내용 업데이트 및 UI 반영
-    public void UpdateSlot(LTH_ItemData newItem, int amount)
+    public void UpdateSlot(ItemData newItem, int amount)
     {
         itemData = newItem;
         currentCount = amount;
-        iconImage.sprite = itemData.icon;
+        iconImage.sprite = itemData.itemIcon;
         RefreshUI();
     }
 
@@ -39,6 +39,20 @@ public class LTH_Slot : MonoBehaviour
 
     private void RefreshUI()
     {
-        countText.text = currentCount.ToString();
+        // countText가 연결되어 있는지 반드시 확인 후 실행
+        if (countText != null)
+        {
+            // 수량이 1개 이하이거나 아이템 타입이 장비라면 숫자를 숨김
+            if (currentCount <= 1 || (itemData != null && itemData.itemType == SMS_ItemType.Equipment))
+            {
+                countText.gameObject.SetActive(false);
+            }
+            else
+            {
+                countText.gameObject.SetActive(true);
+                countText.text = currentCount.ToString();
+            }
+        }
+        // 만약 countText가 null이라면 아무 작업도 하지 않고 넘어가므로 에러가 발생하지 않습니다.
     }
 }

@@ -134,7 +134,7 @@ public class CMJCookScene : MonoBehaviour
         return null;
     }
 
-    ItemData ConvertItem(LTH_ItemData lthItem)
+    ItemData ConvertItem(ItemData lthItem)
     {
         if (lthItem == null) return null;
 

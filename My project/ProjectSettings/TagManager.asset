@@ -4,11 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-<<<<<<< HEAD
-  - Shop
-=======
   - Seat
->>>>>>> a52b8a7fa41d1add0d09f0b6da5e50ab661b164d
+  - Water
   layers:
   - Default
   - TransparentFX

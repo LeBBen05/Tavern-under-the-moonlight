@@ -9,21 +9,21 @@ public class LTH_InventoryTester : MonoBehaviour
     void Update()
     {
         // [숫자 1] 키를 누르면 감자 1개 획득 (슬롯 자동 생성/증가)
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             Debug.Log("감자 획득!");
             LTH_InventoryManager.Instance.AddItem(potato, 1);
         }
 
         // [숫자 2] 키를 누르면 씨앗 5개 획득
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             Debug.Log("씨앗 5개 획득!");
             LTH_InventoryManager.Instance.AddItem(seed, 5);
         }
 
         // [숫자 3] 키를 누르면 감자 1개 감소 (0개가 되면 슬롯 삭제)
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha6))
         {
             Debug.Log("감자 1개 소비");
             UseItemFromInventory(potato, 1);

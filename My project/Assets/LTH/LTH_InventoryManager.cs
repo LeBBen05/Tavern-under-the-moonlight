@@ -51,9 +51,14 @@ public class LTH_InventoryManager : MonoBehaviour
         // 창이 닫혀있을 때만 숫자 키로 도구 교체
         if (!isInventoryOpen)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) SelectTool(0);
-            if (Input.GetKeyDown(KeyCode.Alpha2)) SelectTool(1);
-            if (Input.GetKeyDown(KeyCode.Alpha3)) SelectTool(2);
+            for (int i = 0; i < 8; i++)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+                {
+                    Debug.Log(i + " 번 퀵슬롯");
+                    SelectTool(i);
+                }
+            }
         }
     }
 

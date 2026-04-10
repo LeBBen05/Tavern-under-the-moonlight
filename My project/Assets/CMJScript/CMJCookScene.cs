@@ -33,6 +33,7 @@ public class CMJCookScene : MonoBehaviour
 
     [Header("메뉴판 슬롯")]
     public Text[] slotTexts;
+    public Text[] MenuTexts;
 
     [Header("레시피 데이터")]
     public RecipeData[] recipes;
@@ -40,38 +41,53 @@ public class CMJCookScene : MonoBehaviour
     [Header("재료 이미지 매핑")]
     public ItemImageData[] itemImages;
 
-    [Header("레시피 슬롯 UI (4칸)")]
+    [Header("레시피 슬롯 UI")]
     public Image[] recipeSlotImages;
 
-    [Header("메뉴판 띄우기")]
-    public Text[] MenuTexts;
+    public GameObject TodaysUI;
 
     int selectedSlotIndex = -1;
     int currentMenuIndex = -1;
 
     public bool iSAliveClick = false;
     public bool isAliveAdd = false;
-    public GameObject TodaysUI;
+
+    //핵심: 슬롯별 데이터
+    ItemData[] slotItems;
+    int[] slotCounts;
 
     void Start()
     {
         ClearRecipeSlots();
+
+        slotItems = new ItemData[slotTexts.Length];
+        slotCounts = new int[slotTexts.Length];
+
+        // 초기 텍스트 설정
+        for (int i = 0; i < slotTexts.Length; i++)
+        {
+            slotTexts[i].text = "메뉴추가하기";
+            MenuTexts[i].text = "메뉴추가하기";
+        }
     }
 
     void Update()
     {
         ClickMenuUI.SetActive(iSAliveClick);
         AddButton.SetActive(isAliveAdd);
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            RemoveMenu();
+        }
     }
 
-    // 슬롯 클릭
     public void OnClickSlot(int index)
     {
         selectedSlotIndex = index;
         iSAliveClick = true;
     }
 
-    // 메뉴 클릭
     public void MenuClick(int index)
     {
         if (index < 0 || index >= recipes.Length) return;
@@ -90,7 +106,6 @@ public class CMJCookScene : MonoBehaviour
         ShowRecipe(recipes[index]);
     }
 
-    // 레시피 UI 표시
     void ShowRecipe(RecipeData recipe)
     {
         ClearRecipeSlots();
@@ -103,7 +118,7 @@ public class CMJCookScene : MonoBehaviour
 
             if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem)
                 recipeSlotImages[i].sprite = GetItemSprite(ing.requriedItem);
-            else if (ing.rcqType == SMS_RecipeRequirementType.AnyFish)
+            else
                 recipeSlotImages[i].sprite = GetFishSprite(ing.RfishSize);
         }
     }
@@ -137,7 +152,6 @@ public class CMJCookScene : MonoBehaviour
         return null;
     }
 
-    // 아이템 개수 체크
     int GetItemCount(ItemData item)
     {
         int count = 0;
@@ -145,15 +159,12 @@ public class CMJCookScene : MonoBehaviour
         foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
         {
             if (slot.itemData == item)
-            {
                 count += slot.currentCount;
-            }
         }
 
         return count;
     }
 
-    // 물고기 개수 체크
     int GetFishCount(SMS_FishSize size)
     {
         int count = 0;
@@ -165,16 +176,13 @@ public class CMJCookScene : MonoBehaviour
                 if (data.item == null) continue;
 
                 if (slot.itemData == data.item && data.fishSize == size)
-                {
                     count += slot.currentCount;
-                }
             }
         }
 
         return count;
     }
 
-    // 제작 가능 여부
     bool CanCook(RecipeData recipe, int cookCount)
     {
         foreach (var ing in recipe.ingredients)
@@ -186,7 +194,7 @@ public class CMJCookScene : MonoBehaviour
                 if (GetItemCount(ing.requriedItem) < need)
                     return false;
             }
-            else if (ing.rcqType == SMS_RecipeRequirementType.AnyFish)
+            else
             {
                 if (GetFishCount(ing.RfishSize) < need)
                     return false;
@@ -195,7 +203,6 @@ public class CMJCookScene : MonoBehaviour
         return true;
     }
 
-    // 재료 차감
     void ConsumeIngredients(RecipeData recipe, int cookCount)
     {
         foreach (var ing in recipe.ingredients)
@@ -216,7 +223,6 @@ public class CMJCookScene : MonoBehaviour
         }
     }
 
-    // 결과 아이템 찾기
     ItemData GetResultItem(RecipeData recipe)
     {
         foreach (var data in recipeResults)
@@ -227,50 +233,48 @@ public class CMJCookScene : MonoBehaviour
         return null;
     }
 
-    // 요리 실행
     public void Add()
     {
         if (currentMenuIndex < 0 || selectedSlotIndex < 0) return;
 
         RecipeData recipe = recipes[currentMenuIndex];
-
-        //개수 가져오기
         int cookCount = countController.GetValue();
 
-        //제작 가능 체크
         if (!CanCook(recipe, cookCount))
         {
             Debug.Log("재료 부족!");
             return;
         }
 
-        //재료 차감
         ConsumeIngredients(recipe, cookCount);
 
-        //결과 생성
         ItemData result = GetResultItem(recipe);
 
         if (result != null)
         {
-            int totalAmount = recipe.servingCount * cookCount;
+            int total = recipe.servingCount * cookCount;
 
-            LTH_InventoryManager.Instance.AddItem(
-                result,
-                totalAmount
-            );
+            // 인벤토리 추가
+            LTH_InventoryManager.Instance.AddItem(result, total);
+
+            // 슬롯 데이터 처리
+            if (slotItems[selectedSlotIndex] == result)
+            {
+                slotCounts[selectedSlotIndex] += total;
+            }
+            else
+            {
+                slotItems[selectedSlotIndex] = result;
+                slotCounts[selectedSlotIndex] = total;
+            }
+
+            // UI 업데이트
+            slotTexts[selectedSlotIndex].text =
+                result.itemName + " x" + slotCounts[selectedSlotIndex];
+
+            MenuTexts[selectedSlotIndex].text =
+                result.itemName + " x" + slotCounts[selectedSlotIndex];
         }
-        else
-        {
-            Debug.LogError("결과 아이템 연결 안됨!");
-        }
-
-        // 메뉴판 표시
-        slotTexts[selectedSlotIndex].text =
-            recipe.recipeName + " x" + (recipe.servingCount * cookCount);
-        MenuTexts[selectedSlotIndex].text =
-            recipe.recipeName + " x" + (recipe.servingCount * cookCount);
-
-        Debug.Log("요리 성공: " + recipe.recipeName + " x" + cookCount);
 
         iSAliveClick = false;
         isAliveAdd = false;
@@ -279,6 +283,47 @@ public class CMJCookScene : MonoBehaviour
         selectedSlotIndex = -1;
 
         ClearRecipeSlots();
+    }
+
+    void RemoveMenu()
+    {
+        for (int i = slotCounts.Length - 1; i >= 0; i--)
+        {
+            if (slotCounts[i] > 0)
+            {
+                // 인벤토리 1개 제거
+                foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+                {
+                    if (slot.itemData == slotItems[i])
+                    {
+                        slot.ChangeCount(-1);
+                        break;
+                    }
+                }
+
+                slotCounts[i]--;
+
+                if (slotCounts[i] <= 0)
+                {
+                    slotItems[i] = null;
+                    slotTexts[i].text = "메뉴추가하기";
+                    MenuTexts[i].text = "메뉴추가하기";
+                }
+                else
+                {
+                    slotTexts[i].text =
+                        slotItems[i].itemName + " x" + slotCounts[i];
+
+                    MenuTexts[i].text =
+                        slotItems[i].itemName + " x" + slotCounts[i];
+                }
+
+                Debug.Log("음식소거");
+                return;
+            }
+        }
+
+        Debug.Log("삭제할 메뉴 없음");
     }
 
     public void Back()

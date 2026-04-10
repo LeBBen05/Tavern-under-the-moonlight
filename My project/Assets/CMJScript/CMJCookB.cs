@@ -7,26 +7,35 @@ public class CMJCookB : MonoBehaviour
 {
     public GameObject AllUI;
     public GameObject CookingButton;
+    public GameObject TodaysUI;
     // Start is called before the first frame update
     void Start()
     {
         AllUI.SetActive(false);
+        TodaysUI.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        
-
+        if (AllUI.activeSelf || TodaysUI.activeSelf)
+        {
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
     }
     private void OnMouseDown()
     {
         AllUI.SetActive(true);
+        Time.timeScale = 0f;
     }
     public void CMJLoadScene()
     {
-        SceneManager.LoadScene("TestCookScene");
+        TodaysUI.SetActive(true);
+        Time.timeScale = 0f;
     }
     public void CMJLoadScene2()
     {
@@ -39,6 +48,8 @@ public class CMJCookB : MonoBehaviour
     public void OFFUI()
     {
         AllUI.SetActive(false);
+        TodaysUI.SetActive(false);
+        Time.timeScale = 1f;
     }
 
 }

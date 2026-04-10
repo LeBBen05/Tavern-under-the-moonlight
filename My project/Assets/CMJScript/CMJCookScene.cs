@@ -21,6 +21,9 @@ public class CMJCookScene : MonoBehaviour
         public ItemData resultItem;
     }
 
+    [Header("요리 개수 입력")]
+    public CMJCountController countController;
+
     [Header("레시피 결과 연결")]
     public RecipeResultData[] recipeResults;
 
@@ -40,11 +43,15 @@ public class CMJCookScene : MonoBehaviour
     [Header("레시피 슬롯 UI (4칸)")]
     public Image[] recipeSlotImages;
 
+    [Header("메뉴판 띄우기")]
+    public Text[] MenuTexts;
+
     int selectedSlotIndex = -1;
     int currentMenuIndex = -1;
 
     public bool iSAliveClick = false;
     public bool isAliveAdd = false;
+    public GameObject TodaysUI;
 
     void Start()
     {
@@ -168,18 +175,20 @@ public class CMJCookScene : MonoBehaviour
     }
 
     // 제작 가능 여부
-    bool CanCook(RecipeData recipe)
+    bool CanCook(RecipeData recipe, int cookCount)
     {
         foreach (var ing in recipe.ingredients)
         {
+            int need = ing.amount * cookCount;
+
             if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem)
             {
-                if (GetItemCount(ing.requriedItem) < ing.amount)
+                if (GetItemCount(ing.requriedItem) < need)
                     return false;
             }
             else if (ing.rcqType == SMS_RecipeRequirementType.AnyFish)
             {
-                if (GetFishCount(ing.RfishSize) < ing.amount)
+                if (GetFishCount(ing.RfishSize) < need)
                     return false;
             }
         }
@@ -187,11 +196,11 @@ public class CMJCookScene : MonoBehaviour
     }
 
     // 재료 차감
-    void ConsumeIngredients(RecipeData recipe)
+    void ConsumeIngredients(RecipeData recipe, int cookCount)
     {
         foreach (var ing in recipe.ingredients)
         {
-            int need = ing.amount;
+            int need = ing.amount * cookCount;
 
             foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
             {
@@ -225,23 +234,29 @@ public class CMJCookScene : MonoBehaviour
 
         RecipeData recipe = recipes[currentMenuIndex];
 
-        if (!CanCook(recipe))
+        //개수 가져오기
+        int cookCount = countController.GetValue();
+
+        //제작 가능 체크
+        if (!CanCook(recipe, cookCount))
         {
             Debug.Log("재료 부족!");
             return;
         }
 
-        // 재료 차감
-        ConsumeIngredients(recipe);
+        //재료 차감
+        ConsumeIngredients(recipe, cookCount);
 
-        // 결과 생성
+        //결과 생성
         ItemData result = GetResultItem(recipe);
 
         if (result != null)
         {
+            int totalAmount = recipe.servingCount * cookCount;
+
             LTH_InventoryManager.Instance.AddItem(
                 result,
-                recipe.servingCount
+                totalAmount
             );
         }
         else
@@ -251,7 +266,11 @@ public class CMJCookScene : MonoBehaviour
 
         // 메뉴판 표시
         slotTexts[selectedSlotIndex].text =
-            recipe.recipeName + " x" + recipe.servingCount;
+            recipe.recipeName + " x" + (recipe.servingCount * cookCount);
+        MenuTexts[selectedSlotIndex].text =
+            recipe.recipeName + " x" + (recipe.servingCount * cookCount);
+
+        Debug.Log("요리 성공: " + recipe.recipeName + " x" + cookCount);
 
         iSAliveClick = false;
         isAliveAdd = false;
@@ -275,7 +294,7 @@ public class CMJCookScene : MonoBehaviour
     {
         if (!iSAliveClick)
         {
-            SceneManager.LoadScene("TestMapScene");
+            TodaysUI.SetActive(false);
         }
     }
 }

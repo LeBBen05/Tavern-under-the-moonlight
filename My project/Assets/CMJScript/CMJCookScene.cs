@@ -44,7 +44,10 @@ public class CMJCookScene : MonoBehaviour
     [Header("레시피 슬롯 UI")]
     public Image[] recipeSlotImages;
 
-    public GameObject TodaysUI;
+    [Header("장사 시작 연결")]
+    public Spawner spawner;      // 인스펙터에서 NPCSpawner 드래그
+    public GameObject TodaysUI;  // 요리 UI 전체 부모 객체
+
 
     int selectedSlotIndex = -1;
     int currentMenuIndex = -1;
@@ -342,4 +345,85 @@ public class CMJCookScene : MonoBehaviour
             TodaysUI.SetActive(false);
         }
     }
-}
+    /// <summary>
+    /// '영업 시작' 버튼을 눌렀을 때 호출될 함수입니다.
+    /// </summary>
+    // CMJCookScene.cs 파일의 맨 아래쪽 혹은 적당한 위치에 붙여넣으세요.
+
+    public void StartBusiness()
+    {
+        Debug.Log("<color=yellow>[System]</color> 영업 시작 버튼이 클릭되었습니다!");
+
+        if (spawner == null)
+        {
+            Debug.LogError("Spawner가 연결되지 않았습니다!");
+            return;
+        }
+
+        // 1. 스포너 대기열 초기화
+        spawner.customerQueue.Clear();
+
+        // 2. 현재 요리된 슬롯의 데이터를 스포너로 전달
+        int totalCount = 0;
+        for (int i = 0; i < slotCounts.Length; i++)
+        {
+            if (slotItems[i] != null && slotCounts[i] > 0)
+            {
+                spawner.AddToQueue(slotItems[i], slotCounts[i]);
+                totalCount += slotCounts[i];
+            }
+        }
+
+        if (totalCount <= 0)
+        {
+            Debug.LogWarning("요리된 음식이 없어 영업을 시작할 수 없습니다!");
+            return;
+        }
+
+        // 3. 순서 랜덤하게 섞기
+        spawner.ShuffleQueue();
+
+        // 4. 시간 다시 흐르게 하기 (CMJCookB에서 멈춘 시간을 복구)
+        Time.timeScale = 1f;
+
+        // 5. 요리 UI만 끄기 (씬 이동 절대 금지!)
+        if (TodaysUI != null) TodaysUI.SetActive(false);
+
+        Debug.Log($"<color=cyan>[System]</color> 총 {totalCount}명의 예약 손님과 함께 영업을 시작합니다!");
+    }
+    /// <summary>
+    /// 서빙이 완료되었을 때 호출하여 UI 슬롯의 숫자를 하나 줄입니다.
+    /// </summary>
+    public void DecreaseMenuCount(ItemData servedItem)
+    {
+        for (int i = 0; i < slotItems.Length; i++)
+        {
+            // 1. 해당 슬롯의 아이템이 서빙된 아이템과 같고, 개수가 남아있다면
+            if (slotItems[i] == servedItem && slotCounts[i] > 0)
+            {
+                // 2. 개수 감소
+                slotCounts[i]--;
+
+                // 3. UI 업데이트
+                if (slotCounts[i] <= 0)
+                {
+                    // 개수가 0이면 슬롯 초기화
+                    slotItems[i] = null;
+                    slotTexts[i].text = "메뉴추가하기";
+                    MenuTexts[i].text = "메뉴추가하기";
+                }
+                else
+                {
+                    // 남아있으면 개수 갱신
+                    slotTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
+                    MenuTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
+                }
+
+                Debug.Log($"<color=orange>[UI]</color> {servedItem.itemName} 남은 수량: {slotCounts[i]}");
+                break; // 찾았으니 루프 종료
+            }
+        }
+
+    }
+    }
+

@@ -19,6 +19,7 @@ public class SMS_ShopManager : MonoBehaviour
     [Header("UI연결 - 우측 연결창")]
     public GameObject infoPanel;
     public Text infoText;
+    public Text InfoNameText;
     public Text infoPriceText;
     public Text amountText;
 
@@ -193,6 +194,7 @@ public class SMS_ShopManager : MonoBehaviour
         if (selectedItem == null) return;
 
         infoText.text = selectedItem.ItemInfo;
+        InfoNameText.text = selectedItem.itemName;
         amountText.text = crrAmount.ToString();
 
         int totalPrice = selectedItem.buyPrice * crrAmount;

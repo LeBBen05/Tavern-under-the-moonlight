@@ -145,6 +145,7 @@ public class SMS_ShopManager : MonoBehaviour
         //현재 돈으로 살 수 있는 최대 수량 계산(돈/가격)
         int maxAffordable = playerMoney / item.buyPrice;
         if (maxAffordable < 1) maxAffordable = 1;
+        
 
         //슬라이더 기본 세팅 초기화
         if (amountSlider != null)

@@ -21,6 +21,9 @@ public class SMS_ShopSlotUI : MonoBehaviour
     /// <param name="manager"></param>
     public void SetUpSlot(ItemData data, SMS_ShopManager manager)
     {
+        slotItemData = data;
+        shopManager = manager;
+
         itemiconImage.sprite = slotItemData.itemIcon;   //아이템 아이콘
         itemNameText.text = slotItemData.itemName;  //아이템 이름
         itemPriceText.text = slotItemData.buyPrice.ToString() + "전";    //아이템 가격

@@ -19,6 +19,10 @@ public class FishingMinigame : MonoBehaviour
     [Range(0.1f, 2f)] public float loseSpeed = 0.2f;    // 바 밖에 있을 때 게이지 하락 속도
     [Range(1.0f, 2.0f)] public float hitMargin = 1.2f;  // 판정 범위 배율 (기본 바 크기의 n배)
 
+    [Header("Player Control")]
+    [Tooltip("낚시 종료 후 다시 활성화할 플레이어 이동 스크립트")]
+    public LTH_PlayerMove playerMovement;
+
     [Header("Fish AI (Loaded from ItemData)")]
     public float fishMoveSpeed;         // 물고기의 민첩성 (이동 속도)
     public Vector2 fishWaitTime;        // 다음 목적지로 이동할 때까지의 대기 시간(Min, Max)
@@ -167,7 +171,14 @@ public class FishingMinigame : MonoBehaviour
     /// </summary>
     void FinishGame()
     {
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = true;
+            Debug.Log("<color=orange>[System]</color> 플레이어 이동이 다시 활성화되었습니다.");
+        }
+
         this.enabled = false;
         transform.root.gameObject.SetActive(false);
+
     }
 }

@@ -1,66 +1,150 @@
 using UnityEngine;
+using System.Collections; // ★ 코루틴(IEnumerator) 사용을 위해 필수!
+using System.Collections.Generic; // ★ 리스트(List) 사용을 위해 필수!
 
 /// <summary>
 /// 경영 게임의 손님 생성을 담당하는 스포너 클래스입니다.
-/// 일정 시간마다 빈 좌석을 확인하고 손님을 소환합니다.
+/// 요리 씬에서 확정된 메뉴 리스트를 받아 무작위 순서로 손님을 소환하고, 영업 종료를 관리합니다.
 /// </summary>
 public class Spawner : MonoBehaviour
 {
     [Header("소환 설정")]
-    [Tooltip("생성할 손님 캐릭터의 프리팹")]
     public GameObject customerPrefab;
-
-    [Tooltip("맵의 좌석 상태를 관리하는 매니저")]
     public SeatManager seatManager;
 
     [Range(1f, 10f)]
-    [Tooltip("손님이 소환되는 간격 (초 단위)")]
     public float spawnInterval = 4f;
 
-    [Header("상태 확인")]
-    private float timer = 0f; // 소환 타이머
+    [Header("소환 대기열")]
+    public List<ItemData> customerQueue = new List<ItemData>();
+    private float timer = 0f;
 
-    // 매 프레임마다 시간을 체크하여 소환 주기를 관리합니다.
+    [Header("영업 종료 설정")]
+    public GameObject resultUI;           // 장사 결과창 UI
+    [Tooltip("결과창이 몇 초 뒤에 자동으로 꺼질지 설정합니다.")]
+    public float resultDisplayTime = 3.0f;
+
+    private List<Customer> activeCustomers = new List<Customer>(); // 현재 맵에 있는 손님 리스트
+    private bool isCheckingEnd = false;
+
+    // ==========================================================
+    // 1. 대기열 설정 함수 (CMJCookScene에서 호출)
+    // ==========================================================
+
+    public void AddToQueue(ItemData menu, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            customerQueue.Add(menu);
+        }
+        Debug.Log($"<color=white>[Queue]</color> {menu.itemName} {count}명 추가 완료.");
+    }
+
+    public void ShuffleQueue()
+    {
+        if (customerQueue.Count <= 1) return;
+
+        for (int i = 0; i < customerQueue.Count; i++)
+        {
+            ItemData temp = customerQueue[i];
+            int randomIndex = Random.Range(i, customerQueue.Count);
+            customerQueue[i] = customerQueue[randomIndex];
+            customerQueue[randomIndex] = temp;
+        }
+
+        timer = spawnInterval; // 섞자마자 첫 손님이 나오도록 설정
+        Debug.Log($"<color=yellow>[Spawner]</color> 총 {customerQueue.Count}명의 손님 순서가 랜덤 결정되었습니다!");
+    }
+
+    // ==========================================================
+    // 2. 소환 로직 (Update & TrySpawn)
+    // ==========================================================
+
     void Update()
     {
-        timer += Time.deltaTime; // 시간 누적
-
-        // 설정한 소환 간격보다 시간이 지났을 때
-        if (timer >= spawnInterval)
+        if (customerQueue.Count > 0)
         {
-            timer = 0f;    // 타이머 초기화
-            TrySpawn();    // 소환 시도
+            timer += Time.deltaTime;
+
+            if (timer >= spawnInterval)
+            {
+                timer = 0f;
+                TrySpawn();
+            }
         }
     }
 
-    /// <summary>
-    /// 빈 자리가 있는지 확인하고 손님을 생성하는 핵심 로직입니다.
-    /// </summary>
     void TrySpawn()
     {
-        // 1. 좌석 매니저에게 현재 비어있는 좌석이 있는지 물어봅니다.
         Seat target = seatManager.GetAvailableSeat();
 
-        // 2. 만약 비어있는 자리가 있다면 소환 절차를 진행합니다.
         if (target != null)
         {
-            // 3. 현재 스포너(입구) 위치에 손님 프리팹을 생성합니다.
             GameObject go = Instantiate(customerPrefab, transform.position, Quaternion.identity);
-
-            // 4. 생성된 손님 오브젝트에서 Customer 스크립트를 가져옵니다.
             Customer customer = go.GetComponent<Customer>();
 
-            // 5. 손님이 정상적으로 생성되었다면 이동 명령을 내립니다.
             if (customer != null)
             {
-                // [목적지 좌석]과 [되돌아올 스포너 위치] 정보를 함께 전달합니다.
+                ItemData orderedItem = customerQueue[0];
+
+                // 손님에게 데이터 전달 및 이동 시작
                 customer.StartMoving(target, transform.position);
+                customer.AssignOrder(orderedItem);
+
+                // ★ 맵에 존재하는 손님 리스트에 등록
+                activeCustomers.Add(customer);
+
+                customerQueue.RemoveAt(0);
+
+                Debug.Log($"<color=cyan>[Spawn]</color> 손님 입장! 주문: <b>{orderedItem.itemName}</b> (남은 대기: {customerQueue.Count})");
             }
         }
-        else
+    }
+
+    // ==========================================================
+    // 3. 영업 종료 및 결과창 제어
+    // ==========================================================
+
+    /// <summary>
+    /// 손님이 퇴장할 때 Customer 스크립트에서 호출합니다.
+    /// </summary>
+    public void OnCustomerLeave(Customer customer)
+    {
+        if (activeCustomers.Contains(customer))
         {
-            // 자리가 없을 경우에 대한 예외 처리 (필요시 로그 출력)
-            // Debug.Log("현재 모든 좌석이 만석이라 손님이 방문하지 못했습니다.");
+            activeCustomers.Remove(customer);
         }
+
+        // 소환할 손님도 없고, 맵에 남은 손님도 없다면 영업 종료!
+        if (customerQueue.Count == 0 && activeCustomers.Count == 0)
+        {
+            ShowResult();
+        }
+    }
+
+    void ShowResult()
+    {
+        if (resultUI != null)
+        {
+            Debug.Log("<color=magenta>[System]</color> 오늘 영업 종료! 결과창을 표시합니다.");
+            StopAllCoroutines(); // 혹시 모를 중복 실행 방지
+            StartCoroutine(ShowAndHideResult());
+        }
+    }
+
+    IEnumerator ShowAndHideResult()
+    {
+        // 1. 결과창 켜기
+        resultUI.SetActive(true);
+
+        // 2. 설정된 시간만큼 대기 (예: 3초)
+        yield return new WaitForSeconds(resultDisplayTime);
+
+        // 3. 결과창 끄기
+        resultUI.SetActive(false);
+        Debug.Log("<color=magenta>[System]</color> 결과창이 자동으로 닫혔습니다. 하루가 종료되었습니다.");
+
+        // (선택 사항) 여기에 정산 씬으로 이동하거나 다음 날로 넘어가는 코드를 넣으세요.
+        // UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
     }
 }

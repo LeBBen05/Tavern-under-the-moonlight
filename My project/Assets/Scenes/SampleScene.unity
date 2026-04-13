@@ -115491,8 +115491,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3390622570055066488, guid: 380cfd8206a8364449ded1f35304ea85, type: 3}
   m_PrefabInstance: {fileID: 1161082788}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
-=======
 --- !u!1 &1163842418
 GameObject:
   m_ObjectHideFlags: 0
@@ -115652,7 +115650,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1167098012}
   m_CullTransparentMesh: 1
->>>>>>> d363efee02f5c2cdbcc0443660751bb7b019af4e
 --- !u!1001 &1167889420
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -121373,10 +121370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LTH_moveSpeed: 5
-<<<<<<< HEAD
   LTH_isMoving: 0
-=======
->>>>>>> d363efee02f5c2cdbcc0443660751bb7b019af4e
 --- !u!1001 &1752265183
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -122985,7 +122979,6 @@ MonoBehaviour:
   slotContainer: {fileID: 0}
   shopSlotPrefeb: {fileID: 0}
   shopExit: {fileID: 740434824}
-<<<<<<< HEAD
   infoPanel: {fileID: 0}
   infoText: {fileID: 0}
   infoPriceText: {fileID: 0}
@@ -122994,8 +122987,6 @@ MonoBehaviour:
   decreaseBtn: {fileID: 0}
   amountSlider: {fileID: 0}
   finalBuyBtn: {fileID: 0}
-=======
->>>>>>> d363efee02f5c2cdbcc0443660751bb7b019af4e
   playerMoney: 500
 --- !u!1001 &1924718634
 PrefabInstance:

@@ -19012,7 +19012,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.52, y: -2.9, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -120312,16 +120312,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d305987648ae43945836425e9590a89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalUIWindow: {fileID: 0}
-  inventoryContent: {fileID: 0}
-  recipeContent: {fileID: 0}
-  contentParent: {fileID: 0}
-  slotPrefab: {fileID: 0}
-  quickSlots: []
-  startingTools: []
-  playerHandRenderer: {fileID: 0}
+  inventoryUI: {fileID: 0}
   activeSlots: []
-  isInventoryOpen: 0
+  quickSlots: []
+  slotPrefab: {fileID: 0}
+  contentParent: {fileID: 0}
+  allSlots: []
 --- !u!4 &1765451615
 Transform:
   m_ObjectHideFlags: 0

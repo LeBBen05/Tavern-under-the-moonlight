@@ -15,7 +15,7 @@ public class LTH_Slot : MonoBehaviour, IPointerClickHandler
     // 슬롯 UI 업데이트
     public void UpdateSlot(ItemData newData, int newCount)
     {
-        // [가장 중요] 데이터를 변수에 저장해야 인스펙터에 나타납니다!
+        //데이터를 변수에 저장
         this.itemData = newData;
         this.currentCount = newCount;
 

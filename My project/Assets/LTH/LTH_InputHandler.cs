@@ -3,7 +3,7 @@ using UnityEngine;
 public class LTH_InputHandler : MonoBehaviour
 {
     public LTH_FarmingManager farmingManager;
-    public LTH_InventoryManager inventoryManager; // 태현님의 인벤토리 매니저 연결
+    public LTH_InventoryManager inventoryManager;
 
     private int selectedSlotIndex = 0;
 

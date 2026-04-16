@@ -12,7 +12,7 @@ public class LTH_Crop : MonoBehaviour
 
     private SpriteRenderer sr;
 
-    // 다 자랐는지 확인하는 프로퍼티
+    
     public bool IsFullyGrown => seedData != null && growthSprites != null && currentStep >= growthSprites.Length - 1;
 
     public void Initialize(ItemData data)
@@ -22,8 +22,7 @@ public class LTH_Crop : MonoBehaviour
 
         if (seedData == null) return;
 
-        // 성장 시간 설정 (분 단위 -> 테스트를 위해 아주 빠르게 설정함)
-        // 실제 분 단위로 하려면 seedData.growMinutes * 60f 로 바꾸세요.
+        
         totalGrowthTime = seedData.growMinutes * 0.1f;
 
         if (sr != null && growthSprites != null && growthSprites.Length > 0)
@@ -52,9 +51,7 @@ public class LTH_Crop : MonoBehaviour
         }
     }
 
-    // 태현님의 ItemData 변수명 yeldItem (오타 포함)에 맞춰 수정함
     public ItemData GetYieldItem() => seedData.yeldItem != null ? seedData.yeldItem : seedData;
 
-    // harvestAmount 사용
     public int GetYieldAmount() => seedData != null ? seedData.harvestAmount : 1;
 }

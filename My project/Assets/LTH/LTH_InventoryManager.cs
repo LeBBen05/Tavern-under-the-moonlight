@@ -25,7 +25,7 @@ public class LTH_InventoryManager : MonoBehaviour
         // 리스트 초기화
         if (activeSlots == null) activeSlots = new List<LTH_Slot>();
 
-        // [중요] 시작하자마자 인벤토리를 확실히 끕니다.
+        //시작하자마자 인벤토리를 확실히 끔
         if (inventoryUI != null)
         {
             inventoryUI.SetActive(false);

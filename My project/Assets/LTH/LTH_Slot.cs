@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
+using UnityEngine.EventSystems;
+using TMPro; // 텍스트 매시 프로 사용 시
 
-public class LTH_Slot : MonoBehaviour
+public class LTH_Slot : MonoBehaviour, IPointerClickHandler
 {
     public ItemData itemData;
     public int currentCount;
@@ -11,47 +12,60 @@ public class LTH_Slot : MonoBehaviour
     public Image iconImage;
     public TextMeshProUGUI countText;
 
-    // 슬롯 내용 업데이트 및 UI 반영
-    public void UpdateSlot(ItemData newItem, int amount)
+    // 슬롯 UI 업데이트
+    public void UpdateSlot(ItemData newData, int newCount)
     {
-        itemData = newItem;
-        currentCount = amount;
-        iconImage.sprite = itemData.itemIcon;
-        RefreshUI();
-    }
+        //데이터를 변수에 저장
+        this.itemData = newData;
+        this.currentCount = newCount;
 
-    // 수량 변경 (음수 입력 시 감소)
-    public void ChangeCount(int amount)
-    {
-        currentCount += amount;
-
-        if (currentCount <= 0)
+        // UI 업데이트
+        if (itemData != null)
         {
-            // 인벤토리 매니저 리스트에서 먼저 제거 후 파괴
-            LTH_InventoryManager.Instance.RemoveSlotFromList(this);
-            Destroy(gameObject);
+            if (iconImage != null)
+            {
+                iconImage.sprite = itemData.itemIcon;
+                iconImage.gameObject.SetActive(true);
+            }
+            if (countText != null) countText.text = currentCount.ToString();
         }
         else
         {
-            RefreshUI();
+            if (iconImage != null) iconImage.gameObject.SetActive(false);
+            if (countText != null) countText.text = "";
         }
     }
 
-    private void RefreshUI()
+    // 마우스 클릭 이벤트 (우클릭 시 인벤토리 이동)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        // countText가 연결되어 있는지 반드시 확인 후 실행
-        if (countText != null)
+        if (eventData.button == PointerEventData.InputButton.Right)
         {
-            // 수량이 1개 이하이거나 아이템 타입이 장비라면 숫자를 숨김
-            if (currentCount <= 1 || (itemData != null && itemData.itemType == SMS_ItemType.Equipment))
+            if (itemData != null && IsQuickSlot())
             {
-                countText.gameObject.SetActive(false);
-            }
-            else
-            {
-                countText.gameObject.SetActive(true);
-                countText.text = currentCount.ToString();
+                // 인벤토리에 추가 시도
+                LTH_InventoryManager.Instance.AddItem(itemData, currentCount);
+
+                // 현재 퀵슬롯 비우기
+                UpdateSlot(null, 0);
+                Debug.Log($"{itemData.itemName}이(가) 인벤토리로 복귀했습니다.");
             }
         }
+    }
+
+    private bool IsQuickSlot()
+    {
+        if (LTH_InventoryManager.Instance == null) return false;
+        foreach (var qs in LTH_InventoryManager.Instance.quickSlots)
+        {
+            if (qs == this) return true;
+        }
+        return false;
+    }
+
+    public void ChangeCount(int amount)
+    {
+        currentCount += amount;
+        UpdateSlot(itemData, currentCount);
     }
 }

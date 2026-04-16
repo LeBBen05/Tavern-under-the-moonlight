@@ -7,147 +7,118 @@ public class LTH_InventoryManager : MonoBehaviour
     public static LTH_InventoryManager Instance;
 
     [Header("UI Panels")]
-    public GameObject totalUIWindow;   // 인벤토리와 레시피를 포함한 전체 부모 창
-    public GameObject inventoryContent; // 인벤토리 아이템 리스트 패널
-    public GameObject recipeContent;    // 레시피 정보 패널
-    public Transform contentParent;     // 아이템 슬롯이 생성될 곳 (Scroll View의 Content)
-    public GameObject slotPrefab;
+    public GameObject inventoryUI;   // 인스펙터에서 InventoryUI 연결
+    private bool isInventoryOpen = false;
 
-    [Header("Quick Slots (Bottom UI)")]
-    public LTH_Slot[] quickSlots;
-    public ItemData[] startingTools;
-
-    [Header("Player Visuals")]
-    public SpriteRenderer playerHandRenderer;
-
+    [Header("Inventory Settings")]
     public List<LTH_Slot> activeSlots = new List<LTH_Slot>();
-    public bool isInventoryOpen = false; // 다른 곳에서 참조할 수 있게 public으로 변경
+    public LTH_Slot[] quickSlots;
+    public GameObject slotPrefab;
+    public Transform contentParent;
 
     void Awake()
     {
+        // 싱글톤 설정
         if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        else { Destroy(gameObject); return; }
 
-        // 시작할 때 시간은 정상적으로 흐르게 설정
+        // 리스트 초기화
+        if (activeSlots == null) activeSlots = new List<LTH_Slot>();
+
+        // [중요] 시작하자마자 인벤토리를 확실히 끕니다.
+        if (inventoryUI != null)
+        {
+            inventoryUI.SetActive(false);
+            isInventoryOpen = false;
+        }
+
+        // 게임 속도 정상화
         Time.timeScale = 1f;
-
-        // 시작 시 모든 UI 창을 닫음
-        if (totalUIWindow != null) totalUIWindow.SetActive(false);
-    }
-
-    void Start()
-    {
-        InitializeQuickSlots();
     }
 
     void Update()
     {
-        // ESC 키로 전체 UI 창 토글
+        // ESC 키로 토글
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleInventory();
-        }
-
-        // 창이 닫혀있을 때만 숫자 키로 도구 교체
-        if (!isInventoryOpen)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                if (Input.GetKeyDown(KeyCode.Alpha1 + i))
-                {
-                    Debug.Log(i + " 번 퀵슬롯");
-                    SelectTool(i);
-                }
-            }
-        }
-    }
-
-    // --- 탭 전환 기능 ---
-
-    public void ShowInventory()
-    {
-        if (inventoryContent != null) inventoryContent.SetActive(true);
-        if (recipeContent != null) recipeContent.SetActive(false);
-        Debug.Log("인벤토리 탭 표시");
-    }
-
-    public void ShowRecipe()
-    {
-        if (inventoryContent != null) inventoryContent.SetActive(false);
-        if (recipeContent != null) recipeContent.SetActive(true);
-        Debug.Log("레시피 탭 표시");
-    }
-
-    // --- 도구 및 인벤토리 로직 ---
-
-    private void InitializeQuickSlots()
-    {
-        if (quickSlots == null) return;
-        for (int i = 0; i < quickSlots.Length; i++)
-        {
-            if (quickSlots[i] != null && i < startingTools.Length && startingTools[i] != null)
-            {
-                quickSlots[i].UpdateSlot(startingTools[i], 1);
-            }
-        }
-    }
-
-    public void SelectTool(int index)
-    {
-        if (quickSlots == null || index < 0 || index >= quickSlots.Length) return;
-        if (quickSlots[index] == null || quickSlots[index].itemData == null) return;
-
-        ItemData selectedTool = quickSlots[index].itemData;
-        if (playerHandRenderer != null) playerHandRenderer.sprite = selectedTool.itemIcon;
-
-        for (int i = 0; i < quickSlots.Length; i++)
-        {
-            if (quickSlots[i] == null) continue;
-            Image slotBg = quickSlots[i].GetComponent<Image>();
-            if (slotBg != null)
-                slotBg.color = (i == index) ? Color.white : new Color(0.7f, 0.7f, 0.7f, 0.8f);
         }
     }
 
     public void ToggleInventory()
     {
+        if (inventoryUI == null) return;
+
         isInventoryOpen = !isInventoryOpen;
+        inventoryUI.SetActive(isInventoryOpen);
 
-        if (totalUIWindow != null)
+        if (isInventoryOpen)
         {
-            totalUIWindow.SetActive(isInventoryOpen);
+            Time.timeScale = 0f; // 정지
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
 
-            if (isInventoryOpen)
-            {
-                ShowInventory(); // 창을 열 때 기본적으로 인벤토리가 보이게 함
-                Time.timeScale = 0f; // 필요하다면 시간 정지 (안 보이던 문제 시 이 줄 삭제)
-            }
-            else
-            {
-                Time.timeScale = 1f; // 닫을 때 시간 다시 흐르게
-            }
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent as RectTransform);
         }
-    }
+        else
+        {
+            Time.timeScale = 1f; // 재개
+            // Cursor.visible = false; // 필요 시 주석 해제
+        }
+    
+}
 
     public void AddItem(ItemData item, int amount)
     {
-        if (slotPrefab == null) return;
+        if (item == null) return;
+
         foreach (LTH_Slot slot in activeSlots)
         {
-            if (slot.itemData == item) { slot.ChangeCount(amount); return; }
+            if (slot != null && slot.itemData == item)
+            {
+                slot.ChangeCount(amount);
+                return;
+            }
         }
 
-        GameObject newSlotObj = Instantiate(slotPrefab, contentParent);
-        newSlotObj.transform.SetAsLastSibling();
-        LTH_Slot newSlot = newSlotObj.GetComponent<LTH_Slot>();
-        if (newSlot != null) { newSlot.UpdateSlot(item, amount); activeSlots.Add(newSlot); }
-        LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent as RectTransform);
+        if (slotPrefab != null && contentParent != null)
+        {
+            GameObject newSlotObj = Instantiate(slotPrefab, contentParent);
+            LTH_Slot newSlot = newSlotObj.GetComponent<LTH_Slot>();
+
+            if (newSlot != null)
+            {
+                newSlot.UpdateSlot(item, amount);
+                activeSlots.Add(newSlot);
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent as RectTransform);
+            }
+        }
     }
+
     public void RemoveSlotFromList(LTH_Slot slot)
     {
         if (activeSlots.Contains(slot))
         {
             activeSlots.Remove(slot);
         }
+    }
+
+    public LTH_Slot[] allSlots; // 인스펙터에서 1~8번 슬롯을 드래그해서 넣어둔 배열
+
+    public ItemData GetItemFromSlot(int index)
+    {
+        // 1. 슬롯 배열이 존재하는지 확인
+        if (allSlots == null || index < 0 || index >= allSlots.Length) return null;
+
+        // 2. 해당 슬롯에 아이템이 들어있는지 확인
+        if (allSlots[index] != null && allSlots[index].itemData != null)
+        {
+            return allSlots[index].itemData;
+        }
+
+        Debug.LogWarning($"{index}번 슬롯이 비어있습니다.");
+        return null;
     }
 }

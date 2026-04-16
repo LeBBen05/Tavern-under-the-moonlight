@@ -28,6 +28,11 @@ public class LTH_InventoryTester : MonoBehaviour
             Debug.Log("감자 1개 소비");
             UseItemFromInventory(potato, 1);
         }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            Debug.Log("물뿌리개!");
+            //LTH_InventoryManager.Instance.AddItem(watering, 1);
+        }
     }
 
     // 인벤토리 매니저의 리스트를 뒤져서 해당 아이템의 수량을 깎는 함수

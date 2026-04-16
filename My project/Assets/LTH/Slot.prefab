@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7449601517418667438}
   - component: {fileID: 6941772622197461515}
   - component: {fileID: 5504281143893301382}
+  - component: {fileID: 2878806388736141834}
   m_Layer: 5
   m_Name: Slot
   m_TagString: Untagged
@@ -39,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7449601517418667438
 CanvasRenderer:
@@ -95,6 +96,18 @@ MonoBehaviour:
   currentCount: 0
   iconImage: {fileID: 6941772622197461515}
   countText: {fileID: 0}
+--- !u!114 &2878806388736141834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391659281802985831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c180b042afa21ab41b5a4a72d47c874f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4250845628307088255
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,7 +144,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6001632621627608031
 CanvasRenderer:
@@ -266,7 +279,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8994488566029382284
 CanvasRenderer:

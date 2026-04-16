@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ed24795b20c9c641ad8846b0cc4ea23, type: 3}
-  m_Name: onionSeed
+  m_Name: S_08 eggplantSeed
   m_EditorClassIdentifier: 
-  ItemID: S_05
-  itemName: "\uC591\uD30C \uC528\uC557"
-  itemType: 2
-  itemIcon: {fileID: 2015505253, guid: 19de471ec8e70ba418cdc18ac63ae945, type: 3}
-  dropPrefab: {fileID: 5177466777897172185, guid: e177c4ac66626c140b6692ef8ad608c0, type: 3}
+  ItemID: S_08
+  itemName: "\uAC00\uC9C0 \uC528\uC557"
+  itemType: 1
+  itemIcon: {fileID: 909884169, guid: 19de471ec8e70ba418cdc18ac63ae945, type: 3}
+  dropPrefab: {fileID: 8298267854607881310, guid: 1267886cf445f0c4e98ed0e6391bf634, type: 3}
   isSell: 1
-  buyPrice: 65
+  buyPrice: 35
   buyAmount: 1
-  yeldItem: {fileID: 11400000, guid: cc400609548989b4ea5a622e99898786, type: 2}
-  harvestAmount: 5
-  growMinutes: 55
+  yeldItem: {fileID: 11400000, guid: 1085a749bd7a00e4fb5d6454cbc02ec9, type: 2}
+  harvestAmount: 3
+  growMinutes: 65
   fishSize: 0
   MoveSpeed: 0
   WaitTime: {x: 0, y: 0}

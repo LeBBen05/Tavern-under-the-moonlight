@@ -118,7 +118,7 @@ public class LTH_InventoryManager : MonoBehaviour
             return allSlots[index].itemData;
         }
 
-        Debug.LogWarning($"{index}번 슬롯이 비어있습니다.");
+        //Debug.LogWarning($"{index}번 슬롯이 비어있습니다.");
         return null;
     }
 }

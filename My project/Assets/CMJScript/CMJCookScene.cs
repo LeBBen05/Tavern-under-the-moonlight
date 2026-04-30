@@ -377,6 +377,7 @@ public class CMJCookScene : MonoBehaviour
     public void StartBusiness()
     {
         Debug.Log("<color=yellow>[System]</color> 영업 시작 버튼이 클릭되었습니다!");
+        
 
         if (spawner == null)
         {
@@ -411,9 +412,14 @@ public class CMJCookScene : MonoBehaviour
         Time.timeScale = 1f;
 
         // 5. 요리 UI만 끄기 (씬 이동 절대 금지!)
-        if (TodaysUI != null) TodaysUI.SetActive(false);
+        if (TodaysUI != null) {
+            TodaysUI.SetActive(false);
+        }
+        //TodaysUI.SetActive(false);
+        //isAliveAdd.SetActive(false);
 
         Debug.Log($"<color=cyan>[System]</color> 총 {totalCount}명의 예약 손님과 함께 영업을 시작합니다!");
+        
     }
     /// <summary>
     /// 서빙이 완료되었을 때 호출하여 UI 슬롯의 숫자를 하나 줄입니다.

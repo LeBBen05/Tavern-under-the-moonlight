@@ -44,7 +44,10 @@ public class CMJCookScene : MonoBehaviour
     [Header("레시피 슬롯 UI")]
     public Image[] recipeSlotImages;
 
-    public GameObject TodaysUI;
+    [Header("장사 시작 연결")]
+    public Spawner spawner;      // 인스펙터에서 NPCSpawner 드래그
+    public GameObject TodaysUI;  // 요리 UI 전체 부모 객체
+
 
     int selectedSlotIndex = -1;
     int currentMenuIndex = -1;
@@ -52,24 +55,19 @@ public class CMJCookScene : MonoBehaviour
     public bool iSAliveClick = false;
     public bool isAliveAdd = false;
 
+    //핵심: 슬롯별 데이터
     ItemData[] slotItems;
     int[] slotCounts;
-
-    RecipeData[] slotRecipes;
-    int[] slotCookCounts;
 
     void Start()
     {
         ClearRecipeSlots();
 
-        int size = slotTexts.Length;
+        slotItems = new ItemData[slotTexts.Length];
+        slotCounts = new int[slotTexts.Length];
 
-        slotItems = new ItemData[size];
-        slotCounts = new int[size];
-        slotRecipes = new RecipeData[size];
-        slotCookCounts = new int[size];
-
-        for (int i = 0; i < size; i++)
+        // 초기 텍스트 설정
+        for (int i = 0; i < slotTexts.Length; i++)
         {
             slotTexts[i].text = "메뉴추가하기";
             MenuTexts[i].text = "메뉴추가하기";
@@ -80,12 +78,11 @@ public class CMJCookScene : MonoBehaviour
     {
         ClickMenuUI.SetActive(iSAliveClick);
         AddButton.SetActive(isAliveAdd);
-        /*
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
             RemoveMenu();
         }
-        */
     }
 
     public void OnClickSlot(int index)
@@ -98,8 +95,16 @@ public class CMJCookScene : MonoBehaviour
     {
         if (index < 0 || index >= recipes.Length) return;
 
-        currentMenuIndex = index;
+        if (currentMenuIndex == index)
+        {
+            ClearRecipeSlots();
+            currentMenuIndex = -1;
+            isAliveAdd = false;
+            return;
+        }
+
         isAliveAdd = true;
+        currentMenuIndex = index;
 
         ShowRecipe(recipes[index]);
     }
@@ -119,47 +124,6 @@ public class CMJCookScene : MonoBehaviour
             else
                 recipeSlotImages[i].sprite = GetFishSprite(ing.RfishSize);
         }
-    }
-
-    // 함수 정상 분리됨
-    public void DecreaseMenuCount(ItemData servedItem)
-    {
-        for (int i = 0; i < slotItems.Length; i++)
-        {
-            if (slotItems[i] == servedItem && slotCounts[i] > 0)
-            {
-                slotCounts[i]--;
-
-                if (slotCounts[i] <= 0)
-                {
-                    slotItems[i] = null;
-                    slotTexts[i].text = "메뉴추가하기";
-                    MenuTexts[i].text = "메뉴추가하기";
-                }
-                else
-                {
-                    slotTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
-                    MenuTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
-                }
-
-                Debug.Log($"서빙 완료: {servedItem.itemName}, 남은 수량: {slotCounts[i]}");
-                break;
-            }
-        }
-    }
-
-    //이제 정상 위치
-    public void Back()
-    {
-        iSAliveClick = false;
-        isAliveAdd = false;
-
-        currentMenuIndex = -1;
-        selectedSlotIndex = -1;
-
-        ClearRecipeSlots();
-
-        Debug.Log("뒤로가기 (UI 닫힘)");
     }
 
     void ClearRecipeSlots()
@@ -248,17 +212,15 @@ public class CMJCookScene : MonoBehaviour
         {
             int need = ing.amount * cookCount;
 
-            if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem)
+            foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
             {
-                foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+                if (slot.itemData == ing.requriedItem)
                 {
-                    if (slot.itemData.itemName == ing.requriedItem.itemName)
-                    {
-                        int remove = Mathf.Min(need, slot.currentCount);
-                        slot.ChangeCount(-remove);
-                        need -= remove;
-                        if (need <= 0) break;
-                    }
+                    int remove = Mathf.Min(need, slot.currentCount);
+                    slot.ChangeCount(-remove);
+                    need -= remove;
+
+                    if (need <= 0) break;
                 }
             }
         }
@@ -290,27 +252,9 @@ public class CMJCookScene : MonoBehaviour
         ConsumeIngredients(recipe, cookCount);
 
         ItemData result = GetResultItem(recipe);
-        if (result == null)
+
+        if (result != null)
         {
-<<<<<<< HEAD
-            Debug.LogError("결과 아이템 없음!");
-            return;
-        }
-
-        int total = recipe.servingCount * cookCount;
-
-        LTH_InventoryManager.Instance.AddItem(result, total);
-
-        slotItems[selectedSlotIndex] = result;
-        slotCounts[selectedSlotIndex] = total;
-
-        slotRecipes[selectedSlotIndex] = recipe;
-        slotCookCounts[selectedSlotIndex] = cookCount;
-
-        slotTexts[selectedSlotIndex].text = result.itemName + " x" + total;
-        MenuTexts[selectedSlotIndex].text = result.itemName + " x" + total;
-
-=======
             int total = recipe.servingCount * cookCount;
 
             // 인벤토리 추가
@@ -333,87 +277,27 @@ public class CMJCookScene : MonoBehaviour
 
             MenuTexts[selectedSlotIndex].text =
                 result.itemName + " x" + slotCounts[selectedSlotIndex];
-
-            if (spawner != null && spawner.isOpen)
-            {
-                // 영업 중이라면? 즉시 손님 대기열에 추가!
-                spawner.AddToQueue(result, total);
-                
-                Debug.Log("<color=lime>[영업 중]</color> 실시간 손님 추가 완료!");
-
-                spawner.ShuffleQueue();
-            }
-            else
-            {
-                // 영업 전이라면? 그냥 슬롯에만 담김 (나중에 StartBusiness에서 한꺼번에 처리)
-                Debug.Log("<color=white>[영업 전]</color> 메뉴 예약 완료!");
-            }
-
         }
 
-
-
-        Debug.Log("result: " + result);
->>>>>>> 47fef29a03629268bd31ce193c6555a199596065
         iSAliveClick = false;
         isAliveAdd = false;
+
         currentMenuIndex = -1;
+        selectedSlotIndex = -1;
 
         ClearRecipeSlots();
     }
 
-    public void CancelSelectedRecipe()
-    {
-        if (selectedSlotIndex < 0) return;
-
-        if (slotItems[selectedSlotIndex] == null) return;
-
-        ItemData item = slotItems[selectedSlotIndex];
-        int count = slotCounts[selectedSlotIndex];
-
-        // 결과 제거
-        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
-        {
-            if (slot.itemData == item)
-            {
-                slot.ChangeCount(-count);
-                break;
-            }
-        }
-
-        // 슬롯 초기화
-        slotItems[selectedSlotIndex] = null;
-        slotCounts[selectedSlotIndex] = 0;
-
-        slotTexts[selectedSlotIndex].text = "메뉴추가하기";
-        MenuTexts[selectedSlotIndex].text = "메뉴추가하기";
-
-        selectedSlotIndex = -1;
-
-        Debug.Log("선택 메뉴 취소 완료");
-    }
-
-    public void LoadScene()
-    {
-        if (!iSAliveClick)
-        {
-            if (TodaysUI != null)
-            {
-                TodaysUI.SetActive(false);
-            }
-        }
-
-    }
-
-    public void RemoveMenu()
+    void RemoveMenu()
     {
         for (int i = slotCounts.Length - 1; i >= 0; i--)
         {
             if (slotCounts[i] > 0)
             {
+                // 인벤토리 1개 제거
                 foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
                 {
-                    if (slot.itemData.itemName == slotItems[i].itemName)
+                    if (slot.itemData == slotItems[i])
                     {
                         slot.ChangeCount(-1);
                         break;
@@ -430,18 +314,20 @@ public class CMJCookScene : MonoBehaviour
                 }
                 else
                 {
-                    slotTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
-                    MenuTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
+                    slotTexts[i].text =
+                        slotItems[i].itemName + " x" + slotCounts[i];
+
+                    MenuTexts[i].text =
+                        slotItems[i].itemName + " x" + slotCounts[i];
                 }
 
                 Debug.Log("음식소거");
                 return;
             }
         }
+
+        Debug.Log("삭제할 메뉴 없음");
     }
-<<<<<<< HEAD
-}
-=======
 
     public void Back()
     {
@@ -467,7 +353,6 @@ public class CMJCookScene : MonoBehaviour
     public void StartBusiness()
     {
         Debug.Log("<color=yellow>[System]</color> 영업 시작 버튼이 클릭되었습니다!");
-        
 
         if (spawner == null)
         {
@@ -502,14 +387,9 @@ public class CMJCookScene : MonoBehaviour
         Time.timeScale = 1f;
 
         // 5. 요리 UI만 끄기 (씬 이동 절대 금지!)
-        if (TodaysUI != null) {
-            TodaysUI.SetActive(false);
-        }
-        //TodaysUI.SetActive(false);
-        //isAliveAdd.SetActive(false);
+        if (TodaysUI != null) TodaysUI.SetActive(false);
 
         Debug.Log($"<color=cyan>[System]</color> 총 {totalCount}명의 예약 손님과 함께 영업을 시작합니다!");
-        
     }
     /// <summary>
     /// 서빙이 완료되었을 때 호출하여 UI 슬롯의 숫자를 하나 줄입니다.
@@ -545,106 +425,4 @@ public class CMJCookScene : MonoBehaviour
         }
 
     }
-    public void CancelSelectedRecipe()
-    {
-        // 선택 안 했으면 종료
-        if (selectedSlotIndex < 0)
-        {
-            Debug.Log("선택된 슬롯 없음");
-            return;
-        }
-
-        // 슬롯에 음식 없으면 종료
-        if (slotItems[selectedSlotIndex] == null || slotCounts[selectedSlotIndex] <= 0)
-        {
-            Debug.Log("취소할 메뉴 없음");
-            return;
-        }
-
-        ItemData item = slotItems[selectedSlotIndex];
-        int count = slotCounts[selectedSlotIndex];
-
-        //인벤토리에서 전부 제거
-        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
-        {
-            if (slot.itemData == item)
-            {
-                slot.ChangeCount(-count);
-                break;
-            }
-        }
-
-        //슬롯 초기화
-        slotItems[selectedSlotIndex] = null;
-        slotCounts[selectedSlotIndex] = 0;
-
-        slotTexts[selectedSlotIndex].text = "메뉴추가하기";
-        MenuTexts[selectedSlotIndex].text = "메뉴추가하기";
-
-        Debug.Log("선택한 메뉴 취소 완료");
-
-        //선택 해제
-        selectedSlotIndex = -1;
-    }
-    /// <summary>
-    /// [추가] 영업 중에 실시간으로 메뉴를 요리하여 손님 대기열을 보충합니다.
-    /// </summary>
-    public void AddMenuMidGame()
-    {
-        // 1. 기본 체크 (메뉴와 슬롯이 선택되어야 함)
-        if (currentMenuIndex < 0 || selectedSlotIndex < 0) return;
-
-        RecipeData recipe = recipes[currentMenuIndex];
-        int cookCount = countController.GetValue();
-
-        // 2. 재료 확인
-        if (!CanCook(recipe, cookCount))
-        {
-            Debug.Log("<color=red>재료 부족!</color> 실시간 추가를 할 수 없습니다.");
-            return;
-        }
-
-        // 3. 재료 소모 및 결과 아이템 획득
-        ConsumeIngredients(recipe, cookCount);
-        ItemData result = GetResultItem(recipe);
-
-        if (result != null)
-        {
-            int total = recipe.servingCount * cookCount;
-
-            // 4. 인벤토리 추가
-            LTH_InventoryManager.Instance.AddItem(result, total);
-
-            // 5. 슬롯 데이터 처리 (기존 UI 업데이트 로직 재사용)
-            if (slotItems[selectedSlotIndex] == result)
-            {
-                slotCounts[selectedSlotIndex] += total;
-            }
-            else
-            {
-                slotItems[selectedSlotIndex] = result;
-                slotCounts[selectedSlotIndex] = total;
-            }
-
-            // 6. UI 텍스트 갱신
-            slotTexts[selectedSlotIndex].text = result.itemName + " x" + slotCounts[selectedSlotIndex];
-            MenuTexts[selectedSlotIndex].text = result.itemName + " x" + slotCounts[selectedSlotIndex];
-
-            // 7. ★ 핵심: 스포너가 영업 중이라면 대기열에 손님을 즉시 추가!
-            if (spawner != null && spawner.isOpen)
-            {
-                spawner.AddToQueue(result, total);
-                spawner.ShuffleQueue(); // 새로 들어온 손님 섞기
-                Debug.Log($"<color=lime>[Mid-Game]</color> {result.itemName} {total}명 추가! 손님이 계속 옵니다.");
-            }
-        }
-
-        // 8. 요리 UI 정리
-        iSAliveClick = false;
-        isAliveAdd = false;
-        currentMenuIndex = -1;
-        ClearRecipeSlots();
-    }
 }
-
->>>>>>> 47fef29a03629268bd31ce193c6555a199596065

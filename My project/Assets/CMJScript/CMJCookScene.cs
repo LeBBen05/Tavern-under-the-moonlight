@@ -277,6 +277,14 @@ public class CMJCookScene : MonoBehaviour
 
             MenuTexts[selectedSlotIndex].text =
                 result.itemName + " x" + slotCounts[selectedSlotIndex];
+
+            if (spawner != null && spawner.isOpen)
+            {
+                // 이미 장사 중이라면, 스포너 대기열에 즉시 손님을 추가합니다.
+                spawner.AddToQueue(result, total);
+                spawner.ShuffleQueue();
+                Debug.Log($"<color=lime>[실시간]</color> {result.itemName} 손님 {total}명 추가 완료!");
+            }
         }
 
         iSAliveClick = false;

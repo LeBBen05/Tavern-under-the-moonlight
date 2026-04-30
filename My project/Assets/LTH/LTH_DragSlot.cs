@@ -61,8 +61,6 @@ public class LTH_DragSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
             if (targetSlot != null && targetSlot != sourceSlot)
             {
-                // [중요] 만약 자식인 'Slot' 오브젝트를 잡았다면, 
-                // 진짜 데이터가 저장되어야 할 부모 'QuickSlot'을 다시 찾음
                 if (targetSlot.gameObject.name == "Slot")
                 {
                     LTH_Slot parentSlot = targetSlot.transform.parent.GetComponent<LTH_Slot>();

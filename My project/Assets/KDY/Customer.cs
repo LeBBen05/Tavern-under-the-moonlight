@@ -174,4 +174,29 @@ public class Customer : MonoBehaviour
             Debug.Log("<color=red>[Fail]</color> 원하던 음식이 아닙니다!");
         }
     }
+    /// <summary>
+    /// 메뉴가 삭제되었을 때 스포너에 의해 강제로 쫓겨나는 함수입니다.
+    /// </summary>
+    public void ForceLeave()
+    {
+        Debug.Log($"<color=orange>[Kick]</color> 내가 시킨 메뉴가 없어졌어! 나갑니다.");
+
+        StopAllCoroutines(); // 기다리는 타이머 중단
+        isWaitingForFood = false;
+
+        // 화난 아이콘 표시 (선택 사항)
+        if (foodIconImage != null && angryIcon != null)
+        {
+            foodIconImage.sprite = angryIcon;
+        }
+
+        // 말풍선 끄고, 콜라이더 끄기
+        if (speechBubbleCanvas != null) speechBubbleCanvas.SetActive(false);
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // 밖으로 걸어나감
+        StartLeaving();
+    }
 }

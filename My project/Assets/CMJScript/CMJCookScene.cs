@@ -312,6 +312,11 @@ public class CMJCookScene : MonoBehaviour
             {
                 int removeAmount = slotCounts[i];
 
+                if (spawner != null && slotItems[i] != null)
+                {
+                    spawner.ForceRemoveMenu(slotItems[i]);
+                }
+
                 // 결과 음식 제거
                 foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
                 {

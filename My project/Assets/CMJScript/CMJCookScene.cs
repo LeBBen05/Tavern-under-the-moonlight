@@ -292,6 +292,7 @@ public class CMJCookScene : MonoBehaviour
         ItemData result = GetResultItem(recipe);
         if (result == null)
         {
+<<<<<<< HEAD
             Debug.LogError("결과 아이템 없음!");
             return;
         }
@@ -309,6 +310,51 @@ public class CMJCookScene : MonoBehaviour
         slotTexts[selectedSlotIndex].text = result.itemName + " x" + total;
         MenuTexts[selectedSlotIndex].text = result.itemName + " x" + total;
 
+=======
+            int total = recipe.servingCount * cookCount;
+
+            // 인벤토리 추가
+            LTH_InventoryManager.Instance.AddItem(result, total);
+
+            // 슬롯 데이터 처리
+            if (slotItems[selectedSlotIndex] == result)
+            {
+                slotCounts[selectedSlotIndex] += total;
+            }
+            else
+            {
+                slotItems[selectedSlotIndex] = result;
+                slotCounts[selectedSlotIndex] = total;
+            }
+
+            // UI 업데이트
+            slotTexts[selectedSlotIndex].text =
+                result.itemName + " x" + slotCounts[selectedSlotIndex];
+
+            MenuTexts[selectedSlotIndex].text =
+                result.itemName + " x" + slotCounts[selectedSlotIndex];
+
+            if (spawner != null && spawner.isOpen)
+            {
+                // 영업 중이라면? 즉시 손님 대기열에 추가!
+                spawner.AddToQueue(result, total);
+                
+                Debug.Log("<color=lime>[영업 중]</color> 실시간 손님 추가 완료!");
+
+                spawner.ShuffleQueue();
+            }
+            else
+            {
+                // 영업 전이라면? 그냥 슬롯에만 담김 (나중에 StartBusiness에서 한꺼번에 처리)
+                Debug.Log("<color=white>[영업 전]</color> 메뉴 예약 완료!");
+            }
+
+        }
+
+
+
+        Debug.Log("result: " + result);
+>>>>>>> 47fef29a03629268bd31ce193c6555a199596065
         iSAliveClick = false;
         isAliveAdd = false;
         currentMenuIndex = -1;
@@ -393,4 +439,212 @@ public class CMJCookScene : MonoBehaviour
             }
         }
     }
+<<<<<<< HEAD
 }
+=======
+
+    public void Back()
+    {
+        iSAliveClick = false;
+        isAliveAdd = false;
+        currentMenuIndex = -1;
+
+        ClearRecipeSlots();
+    }
+
+    public void LoadScene()
+    {
+        if (!iSAliveClick)
+        {
+            TodaysUI.SetActive(false);
+        }
+    }
+    /// <summary>
+    /// '영업 시작' 버튼을 눌렀을 때 호출될 함수입니다.
+    /// </summary>
+    // CMJCookScene.cs 파일의 맨 아래쪽 혹은 적당한 위치에 붙여넣으세요.
+
+    public void StartBusiness()
+    {
+        Debug.Log("<color=yellow>[System]</color> 영업 시작 버튼이 클릭되었습니다!");
+        
+
+        if (spawner == null)
+        {
+            Debug.LogError("Spawner가 연결되지 않았습니다!");
+            return;
+        }
+
+        // 1. 스포너 대기열 초기화
+        spawner.customerQueue.Clear();
+
+        // 2. 현재 요리된 슬롯의 데이터를 스포너로 전달
+        int totalCount = 0;
+        for (int i = 0; i < slotCounts.Length; i++)
+        {
+            if (slotItems[i] != null && slotCounts[i] > 0)
+            {
+                spawner.AddToQueue(slotItems[i], slotCounts[i]);
+                totalCount += slotCounts[i];
+            }
+        }
+
+        if (totalCount <= 0)
+        {
+            Debug.LogWarning("요리된 음식이 없어 영업을 시작할 수 없습니다!");
+            return;
+        }
+
+        // 3. 순서 랜덤하게 섞기
+        spawner.ShuffleQueue();
+
+        // 4. 시간 다시 흐르게 하기 (CMJCookB에서 멈춘 시간을 복구)
+        Time.timeScale = 1f;
+
+        // 5. 요리 UI만 끄기 (씬 이동 절대 금지!)
+        if (TodaysUI != null) {
+            TodaysUI.SetActive(false);
+        }
+        //TodaysUI.SetActive(false);
+        //isAliveAdd.SetActive(false);
+
+        Debug.Log($"<color=cyan>[System]</color> 총 {totalCount}명의 예약 손님과 함께 영업을 시작합니다!");
+        
+    }
+    /// <summary>
+    /// 서빙이 완료되었을 때 호출하여 UI 슬롯의 숫자를 하나 줄입니다.
+    /// </summary>
+    public void DecreaseMenuCount(ItemData servedItem)
+    {
+        for (int i = 0; i < slotItems.Length; i++)
+        {
+            // 1. 해당 슬롯의 아이템이 서빙된 아이템과 같고, 개수가 남아있다면
+            if (slotItems[i] == servedItem && slotCounts[i] > 0)
+            {
+                // 2. 개수 감소
+                slotCounts[i]--;
+
+                // 3. UI 업데이트
+                if (slotCounts[i] <= 0)
+                {
+                    // 개수가 0이면 슬롯 초기화
+                    slotItems[i] = null;
+                    slotTexts[i].text = "메뉴추가하기";
+                    MenuTexts[i].text = "메뉴추가하기";
+                }
+                else
+                {
+                    // 남아있으면 개수 갱신
+                    slotTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
+                    MenuTexts[i].text = slotItems[i].itemName + " x" + slotCounts[i];
+                }
+
+                Debug.Log($"<color=orange>[UI]</color> {servedItem.itemName} 남은 수량: {slotCounts[i]}");
+                break; // 찾았으니 루프 종료
+            }
+        }
+
+    }
+    public void CancelSelectedRecipe()
+    {
+        // 선택 안 했으면 종료
+        if (selectedSlotIndex < 0)
+        {
+            Debug.Log("선택된 슬롯 없음");
+            return;
+        }
+
+        // 슬롯에 음식 없으면 종료
+        if (slotItems[selectedSlotIndex] == null || slotCounts[selectedSlotIndex] <= 0)
+        {
+            Debug.Log("취소할 메뉴 없음");
+            return;
+        }
+
+        ItemData item = slotItems[selectedSlotIndex];
+        int count = slotCounts[selectedSlotIndex];
+
+        //인벤토리에서 전부 제거
+        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+        {
+            if (slot.itemData == item)
+            {
+                slot.ChangeCount(-count);
+                break;
+            }
+        }
+
+        //슬롯 초기화
+        slotItems[selectedSlotIndex] = null;
+        slotCounts[selectedSlotIndex] = 0;
+
+        slotTexts[selectedSlotIndex].text = "메뉴추가하기";
+        MenuTexts[selectedSlotIndex].text = "메뉴추가하기";
+
+        Debug.Log("선택한 메뉴 취소 완료");
+
+        //선택 해제
+        selectedSlotIndex = -1;
+    }
+    /// <summary>
+    /// [추가] 영업 중에 실시간으로 메뉴를 요리하여 손님 대기열을 보충합니다.
+    /// </summary>
+    public void AddMenuMidGame()
+    {
+        // 1. 기본 체크 (메뉴와 슬롯이 선택되어야 함)
+        if (currentMenuIndex < 0 || selectedSlotIndex < 0) return;
+
+        RecipeData recipe = recipes[currentMenuIndex];
+        int cookCount = countController.GetValue();
+
+        // 2. 재료 확인
+        if (!CanCook(recipe, cookCount))
+        {
+            Debug.Log("<color=red>재료 부족!</color> 실시간 추가를 할 수 없습니다.");
+            return;
+        }
+
+        // 3. 재료 소모 및 결과 아이템 획득
+        ConsumeIngredients(recipe, cookCount);
+        ItemData result = GetResultItem(recipe);
+
+        if (result != null)
+        {
+            int total = recipe.servingCount * cookCount;
+
+            // 4. 인벤토리 추가
+            LTH_InventoryManager.Instance.AddItem(result, total);
+
+            // 5. 슬롯 데이터 처리 (기존 UI 업데이트 로직 재사용)
+            if (slotItems[selectedSlotIndex] == result)
+            {
+                slotCounts[selectedSlotIndex] += total;
+            }
+            else
+            {
+                slotItems[selectedSlotIndex] = result;
+                slotCounts[selectedSlotIndex] = total;
+            }
+
+            // 6. UI 텍스트 갱신
+            slotTexts[selectedSlotIndex].text = result.itemName + " x" + slotCounts[selectedSlotIndex];
+            MenuTexts[selectedSlotIndex].text = result.itemName + " x" + slotCounts[selectedSlotIndex];
+
+            // 7. ★ 핵심: 스포너가 영업 중이라면 대기열에 손님을 즉시 추가!
+            if (spawner != null && spawner.isOpen)
+            {
+                spawner.AddToQueue(result, total);
+                spawner.ShuffleQueue(); // 새로 들어온 손님 섞기
+                Debug.Log($"<color=lime>[Mid-Game]</color> {result.itemName} {total}명 추가! 손님이 계속 옵니다.");
+            }
+        }
+
+        // 8. 요리 UI 정리
+        iSAliveClick = false;
+        isAliveAdd = false;
+        currentMenuIndex = -1;
+        ClearRecipeSlots();
+    }
+}
+
+>>>>>>> 47fef29a03629268bd31ce193c6555a199596065

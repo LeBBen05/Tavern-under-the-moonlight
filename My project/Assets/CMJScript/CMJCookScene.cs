@@ -316,7 +316,6 @@ public class CMJCookScene : MonoBehaviour
                 {
                     spawner.ForceRemoveMenu(slotItems[i]);
                 }
-
                 // 결과 음식 제거
                 foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
                 {
@@ -326,9 +325,14 @@ public class CMJCookScene : MonoBehaviour
                         break;
                     }
                 }
+                //핵심 조건
+                int originalAmount = slotRecipes[i].servingCount * slotCookCounts[i];
 
-                //재료 복구
-                RestoreIngredients(i);
+                if (slotCounts[i] == originalAmount)
+                {
+                    RestoreIngredients(i);
+                    Debug.Log("재료복구");
+                }
 
                 // 슬롯 초기화
                 slotCounts[i] = 0;
@@ -339,12 +343,10 @@ public class CMJCookScene : MonoBehaviour
                 slotTexts[i].text = "메뉴추가하기";
                 MenuTexts[i].text = "메뉴추가하기";
 
-                Debug.Log("음식 삭제 + 재료 복구 완료");
+                Debug.Log("음식 삭제");
                 return;
             }
         }
-
-        Debug.Log("삭제할 메뉴 없음");
     }
     void RestoreIngredients(int index)
     {

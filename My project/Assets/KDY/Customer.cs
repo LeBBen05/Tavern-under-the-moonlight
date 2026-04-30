@@ -31,7 +31,7 @@ public class Customer : MonoBehaviour
     private bool isServed = false; // 서빙 완료 여부 체크
     private Seat assignedSeat;
     private Vector3 spawnPosition;
-
+    private bool isOrderRestored = false;
     public void AssignOrder(ItemData data)
     {
         requestedItem = data;
@@ -113,7 +113,21 @@ public class Customer : MonoBehaviour
         }
 
         Debug.Log("<color=red>손님: 너무 오래 걸리네요! 그냥 갑니다!</color>");
-        if (foodIconImage != null && angryIcon != null) foodIconImage.sprite = angryIcon;
+        if (!isOrderRestored)
+        {
+            Spawner spawner = FindObjectOfType<Spawner>();
+            if (spawner != null)
+            {
+                // 여기서 딱 한 명분만 돌려보냅니다.
+                spawner.ReturnToQueue(requestedItem);
+                isOrderRestored = true; // 방패 활성화!
+            }
+        }
+
+        if (foodIconImage != null && angryIcon != null)
+        {
+            foodIconImage.sprite = angryIcon;
+        }
 
         yield return new WaitForSeconds(1.5f);
         if (speechBubbleCanvas != null) speechBubbleCanvas.SetActive(false);

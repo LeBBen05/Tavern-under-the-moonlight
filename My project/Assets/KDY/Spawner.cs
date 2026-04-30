@@ -1,10 +1,10 @@
 using UnityEngine;
-using System.Collections; // ★ 코루틴(IEnumerator) 사용을 위해 필수!
-using System.Collections.Generic; // ★ 리스트(List) 사용을 위해 필수!
+using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// 경영 게임의 손님 생성을 담당하는 스포너 클래스입니다.
-/// 요리 씬에서 확정된 메뉴 리스트를 받아 무작위 순서로 손님을 소환하고, 영업 종료를 관리합니다.
+/// 실시간 메뉴 추가를 지원하며, 마감 버튼을 누르기 전까지 영업을 지속합니다.
 /// </summary>
 public class Spawner : MonoBehaviour
 {
@@ -19,25 +19,53 @@ public class Spawner : MonoBehaviour
     public List<ItemData> customerQueue = new List<ItemData>();
     private float timer = 0f;
 
+    [Header("영업 상태 제어")]
+    [Tooltip("이 값이 true면 손님이 없어도 영업이 종료되지 않습니다.")]
+    public bool isOpen = true;
+
     [Header("영업 종료 설정")]
-    public GameObject resultUI;           // 장사 결과창 UI
+    public GameObject resultUI;
     [Tooltip("결과창이 몇 초 뒤에 자동으로 꺼질지 설정합니다.")]
     public float resultDisplayTime = 3.0f;
 
-    private List<Customer> activeCustomers = new List<Customer>(); // 현재 맵에 있는 손님 리스트
-    private bool isCheckingEnd = false;
+    private List<Customer> activeCustomers = new List<Customer>();
 
     // ==========================================================
-    // 1. 대기열 설정 함수 (CMJCookScene에서 호출)
+    // 1. 대기열 및 영업 상태 관리
     // ==========================================================
 
+    /// <summary>
+    /// 영업을 시작합니다. (처음 장사를 시작할 때 호출)
+    /// </summary>
+    public void OpenShop()
+    {
+        isOpen = true;
+        Debug.Log("<color=orange>[System]</color> 가게 문을 열었습니다! 손님을 받기 시작합니다.");
+    }
+
+    /// <summary>
+    /// 영업을 마감합니다. (더 이상 메뉴 추가를 안 할 때 플레이어가 호출)
+    /// 이 함수를 호출한 뒤 남은 손님이 다 나가면 결과창이 뜹니다.
+    /// </summary>
+    public void CloseShop()
+    {
+        isOpen = false;
+        Debug.Log("<color=orange>[System]</color> 마감 준비! 현재 대기열까지만 손님을 받습니다.");
+
+        // 만약 마감을 눌렀는데 이미 손님이 하나도 없다면 바로 결과창 출력
+        CheckBusinessEnd();
+    }
+
+    /// <summary>
+    /// 실시간으로 대기열에 메뉴를 추가합니다.
+    /// </summary>
     public void AddToQueue(ItemData menu, int count)
     {
         for (int i = 0; i < count; i++)
         {
             customerQueue.Add(menu);
         }
-        Debug.Log($"<color=white>[Queue]</color> {menu.itemName} {count}명 추가 완료.");
+        Debug.Log($"<color=white>[Queue]</color> {menu.itemName} {count}명 추가 완료. (현재 대기: {customerQueue.Count})");
     }
 
     public void ShuffleQueue()
@@ -52,16 +80,17 @@ public class Spawner : MonoBehaviour
             customerQueue[randomIndex] = temp;
         }
 
-        timer = spawnInterval; // 섞자마자 첫 손님이 나오도록 설정
-        Debug.Log($"<color=yellow>[Spawner]</color> 총 {customerQueue.Count}명의 손님 순서가 랜덤 결정되었습니다!");
+      
+        Debug.Log($"<color=yellow>[Spawner]</color> 대기열 순서가 무작위로 섞였습니다!");
     }
 
     // ==========================================================
-    // 2. 소환 로직 (Update & TrySpawn)
+    // 2. 소환 로직
     // ==========================================================
 
     void Update()
     {
+        // 대기열에 손님이 있고, 영업 중일 때만 소환 타이머 작동
         if (customerQueue.Count > 0)
         {
             timer += Time.deltaTime;
@@ -86,28 +115,21 @@ public class Spawner : MonoBehaviour
             if (customer != null)
             {
                 ItemData orderedItem = customerQueue[0];
-
-                // 손님에게 데이터 전달 및 이동 시작
                 customer.StartMoving(target, transform.position);
                 customer.AssignOrder(orderedItem);
 
-                // ★ 맵에 존재하는 손님 리스트에 등록
                 activeCustomers.Add(customer);
-
                 customerQueue.RemoveAt(0);
 
-                Debug.Log($"<color=cyan>[Spawn]</color> 손님 입장! 주문: <b>{orderedItem.itemName}</b> (남은 대기: {customerQueue.Count})");
+                Debug.Log($"<color=cyan>[Spawn]</color> 손님 입장! 주문: <b>{orderedItem.itemName}</b>");
             }
         }
     }
 
     // ==========================================================
-    // 3. 영업 종료 및 결과창 제어
+    // 3. 영업 종료 로직
     // ==========================================================
 
-    /// <summary>
-    /// 손님이 퇴장할 때 Customer 스크립트에서 호출합니다.
-    /// </summary>
     public void OnCustomerLeave(Customer customer)
     {
         if (activeCustomers.Contains(customer))
@@ -115,8 +137,14 @@ public class Spawner : MonoBehaviour
             activeCustomers.Remove(customer);
         }
 
-        // 소환할 손님도 없고, 맵에 남은 손님도 없다면 영업 종료!
-        if (customerQueue.Count == 0 && activeCustomers.Count == 0)
+        // 손님이 한 명 나갈 때마다 종료 조건인지 확인
+        CheckBusinessEnd();
+    }
+
+    private void CheckBusinessEnd()
+    {
+        // 핵심 조건: 마감 상태(isOpen == false)이고, 대기열이 없고, 맵에 남은 손님도 없을 때
+        if (!isOpen && customerQueue.Count == 0 && activeCustomers.Count == 0)
         {
             ShowResult();
         }
@@ -124,27 +152,34 @@ public class Spawner : MonoBehaviour
 
     void ShowResult()
     {
-        if (resultUI != null)
+        if (resultUI != null && !resultUI.activeSelf)
         {
-            Debug.Log("<color=magenta>[System]</color> 오늘 영업 종료! 결과창을 표시합니다.");
-            StopAllCoroutines(); // 혹시 모를 중복 실행 방지
+            Debug.Log("<color=magenta>[System]</color> 오늘 영업이 완전히 종료되었습니다.");
+            StopAllCoroutines();
             StartCoroutine(ShowAndHideResult());
         }
     }
 
     IEnumerator ShowAndHideResult()
     {
-        // 1. 결과창 켜기
         resultUI.SetActive(true);
-
-        // 2. 설정된 시간만큼 대기 (예: 3초)
         yield return new WaitForSeconds(resultDisplayTime);
-
-        // 3. 결과창 끄기
         resultUI.SetActive(false);
-        Debug.Log("<color=magenta>[System]</color> 결과창이 자동으로 닫혔습니다. 하루가 종료되었습니다.");
-
-        // (선택 사항) 여기에 정산 씬으로 이동하거나 다음 날로 넘어가는 코드를 넣으세요.
-        // UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
+        Debug.Log("<color=magenta>[System]</color> 결과창이 닫혔습니다.");
     }
+    
+
+    /// <summary>
+    /// 손님이 음식을 못 받고 그냥 갔을 때, 주문했던 메뉴를 다시 대기열에 넣습니다.
+    /// </summary>
+    public void ReturnToQueue(ItemData item)
+    {
+        if (item != null)
+        {
+            customerQueue.Add(item); // 대기열 맨 뒤에 추가
+                                     // ShuffleQueue(); // 필요하다면 다시 섞어줄 수도 있습니다.
+            Debug.Log($"<color=yellow>[Refund]</color> {item.itemName} 주문이 대기열로 복구되었습니다. (남은 대기: {customerQueue.Count})");
+        }
+    }
+
 }

@@ -59,9 +59,15 @@ public class CMJCookScene : MonoBehaviour
     ItemData[] slotItems;
     int[] slotCounts;
 
+    RecipeData[] slotRecipes;
+    int[] slotCookCounts;
+
     void Start()
     {
         ClearRecipeSlots();
+
+        slotRecipes = new RecipeData[slotTexts.Length];
+        slotCookCounts = new int[slotTexts.Length];
 
         slotItems = new ItemData[slotTexts.Length];
         slotCounts = new int[slotTexts.Length];
@@ -270,6 +276,8 @@ public class CMJCookScene : MonoBehaviour
                 slotItems[selectedSlotIndex] = result;
                 slotCounts[selectedSlotIndex] = total;
             }
+            slotRecipes[selectedSlotIndex] = recipe;
+            slotCookCounts[selectedSlotIndex] = cookCount;
 
             // UI 업데이트
             slotTexts[selectedSlotIndex].text =
@@ -296,47 +304,60 @@ public class CMJCookScene : MonoBehaviour
         ClearRecipeSlots();
     }
 
-    void RemoveMenu()
+    public void RemoveMenu()
     {
         for (int i = slotCounts.Length - 1; i >= 0; i--)
         {
             if (slotCounts[i] > 0)
             {
-                // 인벤토리 1개 제거
+                int removeAmount = slotCounts[i];
+
+                // 결과 음식 제거
                 foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
                 {
-                    if (slot.itemData == slotItems[i])
+                    if (slot.itemData.itemName == slotItems[i].itemName)
                     {
-                        slot.ChangeCount(-1);
+                        slot.ChangeCount(-removeAmount);
                         break;
                     }
                 }
 
-                slotCounts[i]--;
+                //재료 복구
+                RestoreIngredients(i);
 
-                if (slotCounts[i] <= 0)
-                {
-                    slotItems[i] = null;
-                    slotTexts[i].text = "메뉴추가하기";
-                    MenuTexts[i].text = "메뉴추가하기";
-                }
-                else
-                {
-                    slotTexts[i].text =
-                        slotItems[i].itemName + " x" + slotCounts[i];
+                // 슬롯 초기화
+                slotCounts[i] = 0;
+                slotItems[i] = null;
+                slotRecipes[i] = null;
+                slotCookCounts[i] = 0;
 
-                    MenuTexts[i].text =
-                        slotItems[i].itemName + " x" + slotCounts[i];
-                }
+                slotTexts[i].text = "메뉴추가하기";
+                MenuTexts[i].text = "메뉴추가하기";
 
-                Debug.Log("음식소거");
+                Debug.Log("음식 삭제 + 재료 복구 완료");
                 return;
             }
         }
 
         Debug.Log("삭제할 메뉴 없음");
     }
+    void RestoreIngredients(int index)
+    {
+        RecipeData recipe = slotRecipes[index];
+        int cookCount = slotCookCounts[index];
 
+        if (recipe == null) return;
+
+        foreach (var ing in recipe.ingredients)
+        {
+            int amount = ing.amount * cookCount;
+
+            if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem)
+            {
+                LTH_InventoryManager.Instance.AddItem(ing.requriedItem, amount);
+            }
+        }
+    }
     public void Back()
     {
         iSAliveClick = false;

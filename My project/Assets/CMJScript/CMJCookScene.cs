@@ -238,10 +238,13 @@ public class CMJCookScene : MonoBehaviour
 
     public void Add()
     {
+        
         if (currentMenuIndex < 0 || selectedSlotIndex < 0) return;
 
         RecipeData recipe = recipes[currentMenuIndex];
         int cookCount = countController.GetValue();
+
+
 
         if (!CanCook(recipe, cookCount))
         {
@@ -252,6 +255,8 @@ public class CMJCookScene : MonoBehaviour
         ConsumeIngredients(recipe, cookCount);
 
         ItemData result = GetResultItem(recipe);
+
+
 
         if (result != null)
         {
@@ -278,12 +283,12 @@ public class CMJCookScene : MonoBehaviour
             MenuTexts[selectedSlotIndex].text =
                 result.itemName + " x" + slotCounts[selectedSlotIndex];
         }
-
+        Debug.Log("result: " + result);
         iSAliveClick = false;
         isAliveAdd = false;
 
         currentMenuIndex = -1;
-        selectedSlotIndex = -1;
+        //selectedSlotIndex = -1;
 
         ClearRecipeSlots();
     }
@@ -431,5 +436,47 @@ public class CMJCookScene : MonoBehaviour
         }
 
     }
+    public void CancelSelectedRecipe()
+    {
+        // 선택 안 했으면 종료
+        if (selectedSlotIndex < 0)
+        {
+            Debug.Log("선택된 슬롯 없음");
+            return;
+        }
+
+        // 슬롯에 음식 없으면 종료
+        if (slotItems[selectedSlotIndex] == null || slotCounts[selectedSlotIndex] <= 0)
+        {
+            Debug.Log("취소할 메뉴 없음");
+            return;
+        }
+
+        ItemData item = slotItems[selectedSlotIndex];
+        int count = slotCounts[selectedSlotIndex];
+
+        //인벤토리에서 전부 제거
+        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+        {
+            if (slot.itemData == item)
+            {
+                slot.ChangeCount(-count);
+                break;
+            }
+        }
+
+        //슬롯 초기화
+        slotItems[selectedSlotIndex] = null;
+        slotCounts[selectedSlotIndex] = 0;
+
+        slotTexts[selectedSlotIndex].text = "메뉴추가하기";
+        MenuTexts[selectedSlotIndex].text = "메뉴추가하기";
+
+        Debug.Log("선택한 메뉴 취소 완료");
+
+        //선택 해제
+        selectedSlotIndex = -1;
     }
+
+}
 

@@ -48,6 +48,8 @@ public class CMJCookScene : MonoBehaviour
     public Spawner spawner;      // 인스펙터에서 NPCSpawner 드래그
     public GameObject TodaysUI;  // 요리 UI 전체 부모 객체
 
+    [Header("미리보기 텍스트")]
+    public Text previewText;
 
     int selectedSlotIndex = -1;
     int currentMenuIndex = -1;
@@ -84,6 +86,8 @@ public class CMJCookScene : MonoBehaviour
     {
         ClickMenuUI.SetActive(iSAliveClick);
         AddButton.SetActive(isAliveAdd);
+
+        UpdatePreview();
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -210,6 +214,22 @@ public class CMJCookScene : MonoBehaviour
             }
         }
         return true;
+    }
+
+    void UpdatePreview()
+    {
+        if (currentMenuIndex < 0)
+        {
+            previewText.text = "";
+            return;
+        }
+
+        RecipeData recipe = recipes[currentMenuIndex];
+        int cookCount = countController.GetValue();
+
+        int total = recipe.servingCount * cookCount;
+
+        previewText.text = $"총개수: {total}";
     }
 
     void ConsumeIngredients(RecipeData recipe, int cookCount)

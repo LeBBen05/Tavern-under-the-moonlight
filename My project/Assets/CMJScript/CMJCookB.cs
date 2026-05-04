@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -85,7 +86,7 @@ public class CMJCookB : MonoBehaviour
         //같은 번호 방지
         do
         {
-            index = Random.Range(0, messages.Length);
+            index = UnityEngine.Random.Range(0, messages.Length);
         }
         while (index == lastIndex);
         lastIndex = index;

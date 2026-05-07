@@ -51,6 +51,9 @@ public class CMJCookScene : MonoBehaviour
     [Header("미리보기 텍스트")]
     public Text previewText;
 
+    [Header("재료 정보 텍스트")]
+    public Text[] ingredientTexts;
+
     int selectedSlotIndex = -1;
     int currentMenuIndex = -1;
 
@@ -123,16 +126,58 @@ public class CMJCookScene : MonoBehaviour
     {
         ClearRecipeSlots();
 
+        int cookCount = countController.GetValue();
+
         for (int i = 0; i < recipe.ingredients.Count; i++)
         {
             var ing = recipe.ingredients[i];
 
             recipeSlotImages[i].gameObject.SetActive(true);
+            ingredientTexts[i].gameObject.SetActive(true);
 
+            int need = ing.amount * cookCount;
+            int current = 0;
+
+            string itemName = "";
+
+            // 아이템 재료
             if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem)
-                recipeSlotImages[i].sprite = GetItemSprite(ing.requriedItem);
+            {
+                recipeSlotImages[i].sprite =
+                    GetItemSprite(ing.requriedItem);
+
+                current = GetItemCount(ing.requriedItem);
+                itemName = ing.requriedItem.itemName;
+            }
+            // 물고기 재료
             else
-                recipeSlotImages[i].sprite = GetFishSprite(ing.RfishSize);
+            {
+                recipeSlotImages[i].sprite =
+                    GetFishSprite(ing.RfishSize);
+
+                current = GetFishCount(ing.RfishSize);
+                itemName = ing.RfishSize.ToString();
+            }
+
+            // 텍스트 표시
+            ingredientTexts[i].text =
+                $"{itemName}\n{current}/{need}";
+
+            // 색 변경
+            if (current >= need)
+            {
+                ingredientTexts[i].color = Color.green;
+            }
+            else
+            {
+                ingredientTexts[i].color = Color.red;
+            }
+        }
+
+        // 남는 텍스트 숨기기
+        for (int i = recipe.ingredients.Count; i < ingredientTexts.Length; i++)
+        {
+            ingredientTexts[i].gameObject.SetActive(false);
         }
     }
 
@@ -142,6 +187,9 @@ public class CMJCookScene : MonoBehaviour
         {
             recipeSlotImages[i].gameObject.SetActive(false);
             recipeSlotImages[i].sprite = null;
+
+            ingredientTexts[i].gameObject.SetActive(false);
+            ingredientTexts[i].text = "";
         }
     }
 
@@ -230,6 +278,10 @@ public class CMJCookScene : MonoBehaviour
         int total = recipe.servingCount * cookCount;
 
         previewText.text = $"총개수: {total}";
+        if (currentMenuIndex >= 0)
+        {
+            ShowRecipe(recipes[currentMenuIndex]);
+        }
     }
 
     void ConsumeIngredients(RecipeData recipe, int cookCount)

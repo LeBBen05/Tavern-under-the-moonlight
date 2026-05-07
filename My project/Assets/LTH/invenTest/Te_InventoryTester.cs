@@ -9,12 +9,12 @@ public class Te_InventoryTester : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
-        { // 스페이스바 누르면 추가
-            Te_InventoryManager.Instance.AddItem(apple, 1);
+        { 
+            //Te_InventoryManager.Instance.AddItem(apple, 1);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            Te_InventoryManager.Instance.RemoveItem(apple, 1);
+            //Te_InventoryManager.Instance.RemoveItem(apple, 1);
             Debug.Log("아이템 감소 테스트");
         }
     }

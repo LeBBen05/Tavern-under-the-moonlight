@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
+using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 [System.Serializable]
 public class InventorySlot
 {
-    public Te_ItemData item;
+    public ItemData item;
     public int count;
 
-    public InventorySlot(Te_ItemData newItem, int newCount)
+    public InventorySlot(ItemData newItem, int newCount)
     {
         item = newItem;
         count = newCount;
@@ -18,6 +21,9 @@ public class InventorySlot
 public class Te_InventoryManager : MonoBehaviour
 {
     public static Te_InventoryManager Instance;
+
+    public GameObject inventoryUI;
+    private bool isInventoryOpen = false;
 
     [Header("설정")]
     public int slotCount = 36;       // 총 슬롯 개수
@@ -31,6 +37,12 @@ public class Te_InventoryManager : MonoBehaviour
     {
         Instance = this;
 
+        if (inventoryUI != null)
+        {
+            inventoryUI.SetActive(false);
+            isInventoryOpen = false;
+        }
+
         // 게임 시작 시 빈 슬롯 생성 및 데이터 초기화
         for (int i = 0; i < slotCount; i++)
         {
@@ -43,15 +55,49 @@ public class Te_InventoryManager : MonoBehaviour
                 slotUI.slotIndex = i; // 각 슬롯에 고유 번호 부여
             }
         }
+
+        Time.timeScale = 1f;
     }
 
     private void Start()
     {
-        UpdateUI();
+        //UpdateUI(item, amount);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleInventory();
+        }
+    }
+
+    public void ToggleInventory()
+    {
+        if (inventoryUI == null) return;
+
+        isInventoryOpen = !isInventoryOpen;
+        inventoryUI.SetActive(isInventoryOpen);
+
+        if (isInventoryOpen)
+        {
+            Time.timeScale = 0f; // 정지
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            Canvas.ForceUpdateCanvases();
+            //LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent as RectTransform);
+        }
+        else
+        {
+            Time.timeScale = 1f; // 재개
+            // Cursor.visible = false; // 필요 시 주석 해제
+        }
+
     }
 
     // 아이템 추가 로직
-    public void AddItem(Te_ItemData item, int amount)
+    public void AddItem(ItemData item, int amount)
     {
         // 1. 중첩 가능한 경우: 기존에 같은 아이템이 있는지 확인
         if (item.isStackable)
@@ -61,7 +107,7 @@ public class Te_InventoryManager : MonoBehaviour
                 if (slot.item == item)
                 {
                     slot.count += amount;
-                    UpdateUI();
+                    UpdateUI(item, amount);
                     return;
                 }
             }
@@ -74,13 +120,13 @@ public class Te_InventoryManager : MonoBehaviour
             {
                 slots[i].item = item;
                 slots[i].count = amount;
-                UpdateUI();
+                UpdateUI(item, amount);
                 return;
             }
         }
     }
 
-    public void RemoveItem(Te_ItemData item, int amount)
+    public void RemoveItem(ItemData item, int amount)
     {
         // 인벤토리 슬롯을 뒤져서 해당 아이템이 있는지 확인
         foreach (var slot in slots)
@@ -97,7 +143,7 @@ public class Te_InventoryManager : MonoBehaviour
                     slot.count = 0;
                 }
 
-                UpdateUI(); // 변경된 내용을 화면에 반영
+                UpdateUI(item, amount); // 변경된 내용을 화면에 반영
                 return;
             }
         }
@@ -105,12 +151,12 @@ public class Te_InventoryManager : MonoBehaviour
     }
 
     // 모든 슬롯의 UI를 새로고침
-    public void UpdateUI()
+    public void UpdateUI(ItemData item, int amount)
     {
         Te_SlotUI[] uiSlots = slotParent.GetComponentsInChildren<Te_SlotUI>();
         foreach (var ui in uiSlots)
         {
-            ui.UpdateSlotUI();
+            ui.UpdateSlotUI(item, amount);
         }
     }
 }

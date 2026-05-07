@@ -5,10 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class Te_InventorySlot
 {
-    public Te_ItemData item;
+    public ItemData item;
     public int count;
 
-    public Te_InventorySlot(Te_ItemData newItem, int newCount)
+    public Te_InventorySlot(ItemData newItem, int newCount)
     {
         item = newItem;
         count = newCount;

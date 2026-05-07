@@ -67,7 +67,7 @@ public class LTH_InventoryManager : MonoBehaviour
             // Cursor.visible = false; // 필요 시 주석 해제
         }
     
-}
+    }
 
     public void AddItem(ItemData item, int amount)
     {

@@ -216,9 +216,9 @@ public class SMS_ShopManager : MonoBehaviour
             playerMoney -= totalPrice;
             int totalGainAmount = crrAmount * selectedItem.buyAmount;
 
-            if (LTH_InventoryManager.Instance != null && selectedItem != null)
+            if (Te_InventoryManager.Instance != null && selectedItem != null) //인벤토리 매니저 스크립트 수정
             {
-                LTH_InventoryManager.Instance.AddItem(selectedItem, totalGainAmount);
+                Te_InventoryManager.Instance.AddItem(selectedItem, totalGainAmount); //인벤토리 매니저 스크립트 수정
                 Debug.Log($"{selectedItem.itemName} {totalGainAmount}개 구매 완료! 남은 돈: {playerMoney}");
             }
             else

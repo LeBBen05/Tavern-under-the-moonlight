@@ -91,10 +91,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7da7f9167e66a04ca5b1bfccc1a25ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemData: {fileID: 0}
-  currentCount: 0
   slotIndex: 0
-  itemIcon: {fileID: 7257283400181582289}
+  iconImage: {fileID: 7257283400181582289}
   countText: {fileID: 5974110922916410532}
 --- !u!1 &2997813123996433847
 GameObject:

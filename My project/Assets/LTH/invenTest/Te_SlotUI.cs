@@ -4,31 +4,29 @@ using TMPro;
 
 public class Te_SlotUI : MonoBehaviour
 {
-    public ItemData itemData;
-    public int currentCount;
+    [Header("슬롯 정보")]
+    public int slotIndex; // 매니저가 생성 시 부여 (0, 1, 2...)
 
-    public int slotIndex;             // 매니저 리스트의 몇 번째 데이터인지
-    public Image itemIcon;            // 자식 오브젝트의 아이콘 이미지
-    public TextMeshProUGUI countText; // 자식 오브젝트의 수량 텍스트
+    [Header("UI 요소 연결")]
+    public Image iconImage;           // 유니티 인스펙터에서 아이콘 Image 연결
+    public TextMeshProUGUI countText; // 유니티 인스펙터에서 수량 Text 연결
 
-    public void UpdateSlotUI(ItemData item, int amount)
+    public void UpdateSlotUI()
     {
-        this.itemData = item;
-        this.currentCount = amount;
+        // 매니저의 slots 리스트에서 내 번호에 맞는 데이터를 가져옴
+        var slotData = Te_InventoryManager.Instance.slots[slotIndex];
 
-        // 매니저에서 내 번호에 맞는 데이터를 가져옴
-        InventorySlot data = Te_InventoryManager.Instance.slots[slotIndex];
-       
-        if (itemData != null)
+        // 1. 슬롯에 아이템 데이터(ItemData)가 있는지 확인
+        if (slotData.item != null)
         {
-            // 아이템이 있으면 표시
-            itemIcon.sprite = itemData.itemIcon;
-            itemIcon.gameObject.SetActive(true);
+            // 제공해주신 ItemData의 변수명 'itemIcon'을 사용합니다.
+            iconImage.sprite = slotData.item.itemIcon;
+            iconImage.gameObject.SetActive(true);
 
-            // 수량이 2개 이상일 때만 숫자 표시
-            if (amount > 1)
+            // 2. 수량이 1보다 크면 숫자 표시, 아니면 숨김
+            if (slotData.count > 1)
             {
-                countText.text = data.count.ToString();
+                countText.text = slotData.count.ToString();
                 countText.gameObject.SetActive(true);
             }
             else
@@ -38,8 +36,8 @@ public class Te_SlotUI : MonoBehaviour
         }
         else
         {
-            // 빈 슬롯이면 모두 숨김
-            itemIcon.gameObject.SetActive(false);
+            // 아이템이 없는 빈 슬롯 처리
+            iconImage.gameObject.SetActive(false);
             countText.gameObject.SetActive(false);
         }
     }

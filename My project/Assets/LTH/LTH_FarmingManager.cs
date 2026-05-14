@@ -47,6 +47,7 @@ public class LTH_FarmingManager : MonoBehaviour
 
     private void PlantSeed(Vector3Int cellPos, ItemData seedData)
     {
+
         // 1. 타일의 중심 위치를 가져오되, Z축은 반드시 0으로 맞춤 (카메라에 보이게 함)
         Vector3 spawnPos = groundTilemap.GetCellCenterWorld(cellPos);
         spawnPos.z = 0f;

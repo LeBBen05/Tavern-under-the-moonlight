@@ -121,4 +121,16 @@ public class LTH_InventoryManager : MonoBehaviour
         Debug.LogWarning($"{index}번 슬롯이 비어있습니다.");
         return null;
     }
+
+    public void UseItem(ItemData targetItem, int amount)
+    {
+        foreach (LTH_Slot slot in LTH_InventoryManager.Instance.activeSlots)
+        {
+            if (slot.itemData == targetItem)
+            {
+                slot.ChangeCount(-amount);
+                break;
+            }
+        }
+    }
 }

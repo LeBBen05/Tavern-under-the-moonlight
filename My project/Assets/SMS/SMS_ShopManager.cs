@@ -8,6 +8,8 @@ public class SMS_ShopManager : MonoBehaviour
 {
     [Header("상점 설정")]
     public List<ItemData> itemSale; //상점에서 팔 아이템 목록을 인스펙터에 넣어주는 역할
+    public float interactionRange = 1.0f;
+    Transform playerTransform;
 
     [Header("UI연결 - 좌측 연결창")]
     bool isShopOpen = false;
@@ -41,6 +43,13 @@ public class SMS_ShopManager : MonoBehaviour
     {
         shopUIPrefeb.SetActive(isShopOpen);  //닫아 두기
 
+        //플레이어 태그 찾기
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            playerTransform = playerObj.transform;
+        }
+
         //버튼 이벤트 연결
         increaseBtn.onClick.AddListener(() => ChangeAmount(1));
         decreaseBtn.onClick.AddListener(() => ChangeAmount(-1));
@@ -63,7 +72,20 @@ public class SMS_ShopManager : MonoBehaviour
 
     private void OnMouseDown()
     {
-        ToggleShop();
+        if (playerTransform == null)
+        {
+            Debug.Log("플레이어 태그가 없습니다.");
+            return;
+        }
+
+        //거리 계산
+        float distance = Vector3.Distance(transform.position, playerTransform.position);
+
+        //거리 체크
+        if (distance <= interactionRange)
+        {
+            ToggleShop();
+        }
     }
 
     /// <summary>
@@ -145,7 +167,7 @@ public class SMS_ShopManager : MonoBehaviour
         //현재 돈으로 살 수 있는 최대 수량 계산(돈/가격)
         int maxAffordable = playerMoney / item.buyPrice;
         if (maxAffordable < 1) maxAffordable = 1;
-        
+
 
         //슬라이더 기본 세팅 초기화
         if (amountSlider != null)

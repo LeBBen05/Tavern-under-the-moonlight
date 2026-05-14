@@ -217,10 +217,10 @@ public class CMJCookScene : MonoBehaviour
     {
         int count = 0;
 
-        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+        foreach (var slot in Te_InventoryManager.Instance.slots)
         {
-            if (slot.itemData == item)
-                count += slot.currentCount;
+            if (slot.item == item)
+                count += slot.count;
         }
 
         return count;
@@ -230,14 +230,14 @@ public class CMJCookScene : MonoBehaviour
     {
         int count = 0;
 
-        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+        foreach (var slot in Te_InventoryManager.Instance.slots)
         {
             foreach (var data in itemImages)
             {
                 if (data.item == null) continue;
 
-                if (slot.itemData == data.item && data.fishSize == size)
-                    count += slot.currentCount;
+                if (slot.item == data.item && data.fishSize == size)
+                    count += slot.count;
             }
         }
 
@@ -290,11 +290,11 @@ public class CMJCookScene : MonoBehaviour
         {
             int need = ing.amount * cookCount;
 
-            foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+            foreach (var slot in Te_InventoryManager.Instance.slots)
             {
-                if (slot.itemData == ing.requriedItem)
+                if (slot.item == ing.requriedItem)
                 {
-                    int remove = Mathf.Min(need, slot.currentCount);
+                    int remove = Mathf.Min(need, slot.count);
                     slot.ChangeCount(-remove);
                     need -= remove;
 

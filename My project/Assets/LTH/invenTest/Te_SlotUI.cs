@@ -4,6 +4,9 @@ using TMPro;
 
 public class Te_SlotUI : MonoBehaviour
 {
+    public ItemData item;
+    public int count;
+
     [Header("슬롯 정보")]
     public int slotIndex; // 매니저가 생성 시 부여 (0, 1, 2...)
 

@@ -242,6 +242,12 @@ public class SMS_ShopManager : MonoBehaviour
             {
                 Te_InventoryManager.Instance.AddItem(selectedItem, totalGainAmount); //인벤토리 매니저 스크립트 수정
                 Debug.Log($"{selectedItem.itemName} {totalGainAmount}개 구매 완료! 남은 돈: {playerMoney}");
+
+                // K 추가 상점 결제 처리 후 인벤토리에 들어갈 때 팝업을 똑같이 띄워줍니다.
+                if (ItemNotificationPopup.Instance != null)
+                {
+                    ItemNotificationPopup.Instance.TriggerPopup(selectedItem, totalGainAmount);
+                }
             }
             else
             {

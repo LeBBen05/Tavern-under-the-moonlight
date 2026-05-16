@@ -119320,6 +119320,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dfd17abf45a540f41bb7dc3402b21d08, type: 2}
   - {fileID: 11400000, guid: 0758fb1b2cbf6c2459d04eb376ccb092, type: 2}
   - {fileID: 11400000, guid: 2c7152f821fb73c438f1c7f844350f5e, type: 2}
+  interactionRange: 1
   shopUIPrefeb: {fileID: 1873908595}
   slotContainer: {fileID: 1873908592}
   shopSlotPrefeb: {fileID: 8016773119099075451, guid: 6ebd312d5b9992d44862c1ab3b4b8c9a, type: 3}
@@ -119772,6 +119773,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bcbbb9251c0ab024f8482813d41bff61, type: 2}
   - {fileID: 11400000, guid: 34a96b105fcf04c4492786209940d2e1, type: 2}
   - {fileID: 11400000, guid: c3147ac972ab5704ab87fa443868ea5f, type: 2}
+  interactionRange: 1
   shopUIPrefeb: {fileID: 0}
   slotContainer: {fileID: 0}
   shopSlotPrefeb: {fileID: 6538935824395024326, guid: 0f4854ebea03c8d45bdcfe1c5a75eed1, type: 3}
@@ -121002,7 +121004,7 @@ GameObject:
   - component: {fileID: 1746457254}
   m_Layer: 0
   m_Name: Player_0
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

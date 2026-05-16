@@ -340,6 +340,12 @@ public class CMJCookScene : MonoBehaviour
             // 인벤토리 추가
             Te_InventoryManager.Instance.AddItem(result, total);
 
+            //아이템 획득 팝업
+            if (ItemNotificationPopup.Instance != null)
+            {
+                ItemNotificationPopup.Instance.TriggerPopup(result, total);
+            }
+
             // 슬롯 데이터 처리
             if (slotItems[selectedSlotIndex] == result)
             {
@@ -350,6 +356,7 @@ public class CMJCookScene : MonoBehaviour
                 slotItems[selectedSlotIndex] = result;
                 slotCounts[selectedSlotIndex] = total;
             }
+
             slotRecipes[selectedSlotIndex] = recipe;
             slotCookCounts[selectedSlotIndex] = cookCount;
 
@@ -360,11 +367,12 @@ public class CMJCookScene : MonoBehaviour
             MenuTexts[selectedSlotIndex].text =
                 result.itemName + " x" + slotCounts[selectedSlotIndex];
 
+            // 장사 중이면 손님 추가
             if (spawner != null && spawner.isOpen)
             {
-                // 이미 장사 중이라면, 스포너 대기열에 즉시 손님을 추가합니다.
                 spawner.AddToQueue(result, total);
                 spawner.ShuffleQueue();
+
                 Debug.Log($"<color=lime>[실시간]</color> {result.itemName} 손님 {total}명 추가 완료!");
             }
         }

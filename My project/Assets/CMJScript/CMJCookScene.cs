@@ -292,16 +292,18 @@ public class CMJCookScene : MonoBehaviour
 
             foreach (var slot in Te_InventoryManager.Instance.slots)
             {
-                if (slot.item == ing.requriedItem)
+                if (slot.item != null && slot.item.ItemID == ing.requriedItem.ItemID)// 수정
                 {
                     int remove = Mathf.Min(need, slot.count);
-                    slot.ChangeCount(-remove);
+                    slot.count -= remove;
                     need -= remove;
 
+                    if (slot.count <= 0) slot.item = null; //수정
                     if (need <= 0) break;
                 }
             }
         }
+        Te_InventoryManager.Instance.UpdateUI(); //수정
     }
 
     ItemData GetResultItem(RecipeData recipe)
@@ -336,7 +338,7 @@ public class CMJCookScene : MonoBehaviour
             int total = recipe.servingCount * cookCount;
 
             // 인벤토리 추가
-            LTH_InventoryManager.Instance.AddItem(result, total);
+            Te_InventoryManager.Instance.AddItem(result, total);
 
             // 슬롯 데이터 처리
             if (slotItems[selectedSlotIndex] == result)
@@ -389,14 +391,16 @@ public class CMJCookScene : MonoBehaviour
                     spawner.ForceRemoveMenu(slotItems[i]);
                 }
                 // 결과 음식 제거
-                foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+                foreach (var slot in Te_InventoryManager.Instance.slots) // 수정
                 {
-                    if (slot.itemData.itemName == slotItems[i].itemName)
+                    if (slot.item != null && slot.item.itemName == slotItems[i].itemName) //수정
                     {
-                        slot.ChangeCount(-removeAmount);
+                        slot.count -= removeAmount; //수정
                         break;
                     }
                 }
+                Te_InventoryManager.Instance.UpdateUI(); //수정
+
                 //핵심 조건
                 int originalAmount = slotRecipes[i].servingCount * slotCookCounts[i];
 
@@ -433,7 +437,7 @@ public class CMJCookScene : MonoBehaviour
 
             if (ing.rcqType == SMS_RecipeRequirementType.SpecificItem)
             {
-                LTH_InventoryManager.Instance.AddItem(ing.requriedItem, amount);
+                Te_InventoryManager.Instance.AddItem(ing.requriedItem, amount); //수정
             }
         }
     }

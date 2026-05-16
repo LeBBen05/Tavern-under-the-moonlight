@@ -49,9 +49,9 @@ public class PlayerServing : MonoBehaviour
     // 인벤토리에 해당 아이템이 있는지 확인하는 함수
     bool HasItemInInventory(ItemData item)
     {
-        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+        foreach (var slot in Te_InventoryManager.Instance.slots) // 수정
         {
-            if (slot.itemData == item && slot.currentCount > 0)
+            if (slot.item != null && slot.item.ItemID == item.ItemID && slot.count > 0) //수정
                 return true;
         }
         return false;
@@ -60,11 +60,20 @@ public class PlayerServing : MonoBehaviour
     // 인벤토리에서 아이템을 1개 줄이는 함수
     void ConsumeItemFromInventory(ItemData item)
     {
-        foreach (var slot in LTH_InventoryManager.Instance.activeSlots)
+        foreach (var slot in Te_InventoryManager.Instance.slots) // 수정
         {
-            if (slot.itemData == item && slot.currentCount > 0)
+            if (slot.item != null && slot.item.ItemID == item.ItemID && slot.count > 0) //수정
             {
-                slot.ChangeCount(-1); // 1개 소모
+                slot.count--; // 1개 소모  수정
+
+                if (slot.count <= 0) //수정
+                {
+                    slot.item = null; //수정
+                    slot.count = 0; //수정
+                }
+
+                Te_InventoryManager.Instance.UpdateUI(); //수정
+
                 break;
             }
         }

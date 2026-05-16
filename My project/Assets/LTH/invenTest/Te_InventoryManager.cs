@@ -163,4 +163,25 @@ public class Te_InventoryManager : MonoBehaviour
             ui.UpdateSlotUI();
         }
     }
+
+    public void UseItem(ItemData targetItem, int amount)
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.item != null && slot.item.ItemID == targetItem.ItemID)
+            {
+                slot.count -= amount;
+
+                if (slot.count <= 0)
+                {
+                    slot.item = null;
+                    slot.count = 0;
+                }
+
+                UpdateUI();
+                break;
+            }
+        }
+    }
+
 }

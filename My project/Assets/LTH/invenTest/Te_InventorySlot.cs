@@ -15,4 +15,6 @@ public class Te_InventorySlot
     }
 
     public void Clear() { item = null; count = 0; }
+
+    
 }

@@ -17,8 +17,10 @@ MonoBehaviour:
   itemType: 2
   itemIcon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   dropPrefab: {fileID: 8298267854607881310, guid: 21a42fa666fee064784286f571713c0d, type: 3}
-  buyPrice: 0
-  buyAmount: 0
+  ItemInfo: 
+  isSell: 1
+  buyPrice: 1
+  buyAmount: 1
   yeldItem: {fileID: 0}
   harvestAmount: 0
   growMinutes: 0

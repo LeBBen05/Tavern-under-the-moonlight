@@ -145,6 +145,7 @@ public class SMS_ShopManager : MonoBehaviour
         //현재 돈으로 살 수 있는 최대 수량 계산(돈/가격)
         int maxAffordable = playerMoney / item.buyPrice;
         if (maxAffordable < 1) maxAffordable = 1;
+        
 
         //슬라이더 기본 세팅 초기화
         if (amountSlider != null)
@@ -215,9 +216,9 @@ public class SMS_ShopManager : MonoBehaviour
             playerMoney -= totalPrice;
             int totalGainAmount = crrAmount * selectedItem.buyAmount;
 
-            if (LTH_InventoryManager.Instance != null && selectedItem != null)
+            if (Te_InventoryManager.Instance != null && selectedItem != null) //인벤토리 매니저 스크립트 수정
             {
-                LTH_InventoryManager.Instance.AddItem(selectedItem, totalGainAmount);
+                Te_InventoryManager.Instance.AddItem(selectedItem, totalGainAmount); //인벤토리 매니저 스크립트 수정
                 Debug.Log($"{selectedItem.itemName} {totalGainAmount}개 구매 완료! 남은 돈: {playerMoney}");
             }
             else

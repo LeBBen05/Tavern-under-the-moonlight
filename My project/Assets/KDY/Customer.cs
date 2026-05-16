@@ -32,6 +32,7 @@ public class Customer : MonoBehaviour
     private Seat assignedSeat;
     private Vector3 spawnPosition;
     private bool isOrderRestored = false;
+
     public void AssignOrder(ItemData data)
     {
         requestedItem = data;
@@ -53,7 +54,7 @@ public class Customer : MonoBehaviour
         isMoving = true;
         isLeaving = false;
 
-        // ★ [추가] 이동 중에는 클릭되지 않도록 콜라이더를 끕니다.
+        // ★ 이동 중에는 클릭되지 않도록 콜라이더를 끕니다.
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
@@ -99,7 +100,7 @@ public class Customer : MonoBehaviour
         isWaitingForFood = true;
         currentWaitTimer = maxWaitTime;
 
-        // ★ [추가] 자리에 앉았을 때만 콜라이더를 켜서 클릭이 가능하게 만듭니다.
+        // ★ 자리에 앉았을 때만 콜라이더를 켜서 클릭이 가능하게 만듭니다.
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = true;
 
@@ -118,7 +119,6 @@ public class Customer : MonoBehaviour
             Spawner spawner = FindObjectOfType<Spawner>();
             if (spawner != null)
             {
-                // 여기서 딱 한 명분만 돌려보냅니다.
                 spawner.ReturnToQueue(requestedItem);
                 isOrderRestored = true; // 방패 활성화!
             }
@@ -136,7 +136,7 @@ public class Customer : MonoBehaviour
 
     void StartLeaving()
     {
-        // ★ [추가] 나갈 때도 중복 클릭 방지를 위해 콜라이더를 끕니다.
+        // ★ 나갈 때도 중복 클릭 방지를 위해 콜라이더를 끕니다.
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
@@ -150,9 +150,9 @@ public class Customer : MonoBehaviour
 
     public void OnServed(ItemData servedItem)
     {
-        // 이미 1차적으로 콜라이더를 껐다 켰다 하므로 더 안전해졌습니다.
         if (!isSeated || isServed) return;
 
+        // 플레이어가 서빙한 음식과 손님이 요청한 음식을 비교합니다.
         if (servedItem == requestedItem)
         {
             isServed = true;
@@ -161,6 +161,36 @@ public class Customer : MonoBehaviour
 
             Debug.Log("<color=green>[Success]</color> 서빙 성공!");
 
+            if (MoneyManager.Instance != null && requestedItem != null)
+            {
+                int finalPrice = 0;
+
+                // 프로젝트 내에 존재하는 모든 레시피 데이터들을 싹 불러와서 검색합니다.
+                RecipeData[] allRecipes = Resources.FindObjectsOfTypeAll<RecipeData>();
+                foreach (RecipeData recipe in allRecipes)
+                {
+                    // 손님이 먹은 음식 이름(requestedItem.itemName)과 레시피 이름(recipe.recipeName)이 일치하는지 확인
+                    // 예: 완성된 음식 이름이 "생선 구이"이고 레시피 이름이 "생선 구이"일 때
+                    if (recipe.recipeName == requestedItem.itemName)
+                    {
+                        finalPrice = recipe.sellPrice; // 레시피에 적힌 12원을 쏙 빼옵니다!
+                        break;
+                    }
+                }
+
+                // 가격을 정상적으로 찾았다면 그만큼 돈을 벌어옵니다!
+                if (finalPrice > 0)
+                {
+                    MoneyManager.Instance.AddMoney(finalPrice);
+                    Debug.Log($"<color=lime>[정산]</color> {requestedItem.itemName} 가격 {finalPrice}전 획득!");
+                }
+                else
+                {
+                    // 만약 이름이 안 맞거나 레시피를 못 찾으면 버그 방지용으로 기본 10전이라도 줍니다.
+                    Debug.LogWarning($"<color=yellow>[경고]</color> {requestedItem.itemName}과 일치하는 레시피 이름을 찾지 못해 기본 가격으로 정산합니다.");
+                    MoneyManager.Instance.AddMoney(10);
+                }
+            }
             CMJCookScene cookScene = FindObjectOfType<CMJCookScene>();
             if (cookScene != null) cookScene.DecreaseMenuCount(requestedItem);
 
@@ -174,6 +204,7 @@ public class Customer : MonoBehaviour
             Debug.Log("<color=red>[Fail]</color> 원하던 음식이 아닙니다!");
         }
     }
+
     /// <summary>
     /// 메뉴가 삭제되었을 때 스포너에 의해 강제로 쫓겨나는 함수입니다.
     /// </summary>
@@ -181,22 +212,19 @@ public class Customer : MonoBehaviour
     {
         Debug.Log($"<color=orange>[Kick]</color> 내가 시킨 메뉴가 없어졌어! 나갑니다.");
 
-        StopAllCoroutines(); // 기다리는 타이머 중단
+        StopAllCoroutines();
         isWaitingForFood = false;
 
-        // 화난 아이콘 표시 (선택 사항)
         if (foodIconImage != null && angryIcon != null)
         {
             foodIconImage.sprite = angryIcon;
         }
 
-        // 말풍선 끄고, 콜라이더 끄기
         if (speechBubbleCanvas != null) speechBubbleCanvas.SetActive(false);
 
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        // 밖으로 걸어나감
         StartLeaving();
     }
 }

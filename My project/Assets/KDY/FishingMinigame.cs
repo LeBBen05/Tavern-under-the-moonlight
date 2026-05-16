@@ -140,6 +140,11 @@ public class FishingMinigame : MonoBehaviour
             Te_InventoryManager.Instance.AddItem(currentFishData, 1);
             Debug.Log($"<color=green>{name} Æ÷È¹ ¼º°ø!</color>");
             FinishGame();
+            if (ItemNotificationPopup.Instance != null && currentFishData != null)
+            {
+                ItemNotificationPopup.Instance.TriggerPopup(currentFishData, 1);
+            }
+
         }
         else if (successSlider.value <= 0f)
         {

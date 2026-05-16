@@ -51,6 +51,10 @@ public class ItemData : ScriptableObject
     public float MoveSpeed;   // 물고기가 움직이는 부드러움 (높을수록 빠름)
     public Vector2 WaitTime = new Vector2(); // 목적지 변경 시간 (최소, 최대)
 
+    //K추가
+    [Header("경영/서빙 설정")]
+    public int sellPrice;
+
 }
 
 

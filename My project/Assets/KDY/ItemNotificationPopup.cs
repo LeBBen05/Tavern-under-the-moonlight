@@ -2,94 +2,107 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-/// <summary>
-/// 아이템을 획득하거나 구매했을 때 화면 왼쪽에 잠깐 나타나는 
-/// 토스트 알림 팝업을 제어하는 클래스입니다.
-/// </summary>
 public class ItemNotificationPopup : MonoBehaviour
 {
-    // 어디서나 한 줄로 편하게 부를 수 있도록 싱글톤 인스턴스 생성
     public static ItemNotificationPopup Instance;
 
     [Header("UI 컴포넌트 연결")]
-    [Tooltip("껐다 켰다 할 부모 패널(PopupPanel)을 넣어주세요.")]
     public GameObject popupPanel;
-
-    [Tooltip("아이템 아이콘이 들어갈 Image 컴포넌트를 넣어주세요.")]
     public Image itemIconImage;
+    public Text itemText;
 
-    [Tooltip("아이템 이름과 개수가 적힐 Text 컴포넌트를 넣어주세요.")]
-    public Text itemText;          // 만약 TextMeshPro를 쓰신다면 TMP_Text로 바꾸시면 됩니다!
-
-    [Header("설정")]
-    [Tooltip("팝업이 화면에 유지될 시간(초)입니다.")]
+    [Header("애니메이션 설정")]
+    [Tooltip("팝업이 화면에 머무르는 시간입니다.")]
     public float displayTime = 2.0f;
 
-    private Coroutine hideCoroutine;
+    [Tooltip("들어오고 나가는 이동 애니메이션의 속도(시간)입니다. 숫자가 낮을수록 '확' 들어옵니다.")]
+    public float slideDuration = 0.2f;
+
+    private RectTransform rectTransform;
+    private Vector2 onScreenPos;  // 인펙터에서 설정한 화면 내 최종 목적지 좌표 (X: 50)
+    private Vector2 offScreenPos; // 화면 왼쪽 밖으로 숨겨질 시작 좌표 (X: -400 등)
+    private Coroutine popupAnimationCoroutine;
 
     void Awake()
     {
-        // 싱글톤 세팅
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
-        // ★ 게임이 시작할 때는 평소대로 화면에서 안 보이게 꺼둡니다.
         if (popupPanel != null)
         {
+            rectTransform = popupPanel.GetComponent<RectTransform>();
+
+            // 1. 유니티 인스펙터에서 도연님이 세팅해 둔 이쁜 위치를 켜질 때의 목적지로 기억합니다.
+            onScreenPos = rectTransform.anchoredPosition;
+
+            // 2. 패널의 가로 크기를 계산해서 화면 왼쪽 바깥 좌표를 자동으로 구합니다.
+            float panelWidth = rectTransform.rect.width;
+            offScreenPos = new Vector2(-panelWidth - 100f, onScreenPos.y);
+
+            // 3. 시작할 때는 패널을 화면 밖에 배치하고 꺼둡니다.
+            rectTransform.anchoredPosition = offScreenPos;
             popupPanel.SetActive(false);
         }
     }
 
     /// <summary>
-    /// 아이템을 사거나 요리해서 획득했을 때 외부 스크립트에서 호출하는 함수입니다.
-    /// 예: ItemNotificationPopup.Instance.TriggerPopup(item, 5);
+    /// 요리/상점/낚시 성공 시 호출되는 핵심 함수
     /// </summary>
     public void TriggerPopup(ItemData item, int count)
     {
-        if (item == null || popupPanel == null) return;
+        if (item == null || popupPanel == null || rectTransform == null) return;
 
-        // 1. UI 내용 최신 데이터로 매핑
-        if (itemIconImage != null)
-        {
-            // ItemData 스크립터블 오브젝트 내부에 저장된 아이콘 이미지를 가져옵니다.
-            itemIconImage.sprite = item.itemIcon;
-        }
+        // UI 데이터 매핑
+        if (itemIconImage != null) itemIconImage.sprite = item.itemIcon;
+        if (itemText != null) itemText.text = $"{item.itemName} x{count}";
 
-        if (itemText != null)
-        {
-            // 그려주신 기획서대로 "아이템명 x 개수" 형태로 텍스트를 구성합니다.
-            itemText.text = $"{item.itemName} x{count}";
-        }
-
-        // 2. 팝업창 활성화
+        // 패널 활성화
         popupPanel.SetActive(true);
 
-        // 3. 연타 대처용 타이머 초기화 로직
-        // 이미 팝업이 켜져 있는 도중에 다른 아이템을 또 먹으면, 
-        // 기존 2초 타이머를 지우고 새로 2초를 처음부터 다시 셉니다.
-        if (hideCoroutine != null)
+        // ★ 연타 예외 처리: 애니메이션 도중 아이템을 또 먹으면, 
+        // 기존에 돌던 연출 코루틴을 강제로 끄고 새로운 연출을 실행합니다.
+        if (popupAnimationCoroutine != null)
         {
-            StopCoroutine(hideCoroutine);
+            StopCoroutine(popupAnimationCoroutine);
         }
-        hideCoroutine = StartCoroutine(HideAfterDelay());
+        popupAnimationCoroutine = StartCoroutine(PlayPopupAnimationSequence());
     }
 
     /// <summary>
-    /// 설정한 시간이 지나면 자동으로 팝업을 끄는 코루틴입니다.
+    /// [확 들어오기 -> 대기 -> 슥 사라지기] 연출을 담당하는 시퀀스 코루틴
     /// </summary>
-    IEnumerator HideAfterDelay()
+    IEnumerator PlayPopupAnimationSequence()
     {
-        // 설정한 디스플레이 시간(예: 2초)만큼 대기합니다.
+        // --- 1단계: 왼쪽에서 오른쪽으로 확 들어오기 (Slide In) ---
+        // 연타 시 뚝뚝 끊기지 않도록 '현재 위치'에서 목적지까지 부드럽게 이어지게 만듭니다.
+        Vector2 currentPos = rectTransform.anchoredPosition;
+        float time = 0f;
+
+        while (time < slideDuration)
+        {
+            time += Time.deltaTime;
+            // Lerp를 이용해 정해진 시간 동안 부드럽게 위치 이동
+            rectTransform.anchoredPosition = Vector2.Lerp(currentPos, onScreenPos, time / slideDuration);
+            yield return null; // 다음 프레임까지 대기
+        }
+        rectTransform.anchoredPosition = onScreenPos; // 정확한 목적지 안착
+
+        // --- 2단계: 화면에 띄워진 상태로 지정된 시간 동안 대기 (Display) ---
         yield return new WaitForSeconds(displayTime);
 
-        // 시간이 다 지나면 다시 패널을 비활성화합니다.
+        // --- 3단계: 오른쪽에서 다시 왼쪽 화면 밖으로 사라지기 (Slide Out) ---
+        currentPos = rectTransform.anchoredPosition;
+        time = 0f;
+
+        while (time < slideDuration)
+        {
+            time += Time.deltaTime;
+            rectTransform.anchoredPosition = Vector2.Lerp(currentPos, offScreenPos, time / slideDuration);
+            yield return null;
+        }
+        rectTransform.anchoredPosition = offScreenPos; // 화면 밖 안착
+
+        // --- 4단계: 완전히 숨겨지면 오브젝트 끄기 ---
         popupPanel.SetActive(false);
     }
 }

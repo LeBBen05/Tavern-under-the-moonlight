@@ -115,6 +115,14 @@ public class CMJCookB : MonoBehaviour
 
     public void CMJLoadScene3()
     {
+        // Carry ป๓ลย OFF
+        CMJPlayerEnime playerAnim = FindObjectOfType<CMJPlayerEnime>();
+
+        if (playerAnim != null)
+        {
+            playerAnim.SetCarrying(false);
+        }
+
         SceneManager.LoadScene("SampleScene");
     }
 

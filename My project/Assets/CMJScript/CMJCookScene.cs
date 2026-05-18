@@ -473,6 +473,12 @@ public class CMJCookScene : MonoBehaviour
     public void StartBusiness()
     {
         Debug.Log("<color=yellow>[System]</color> 영업 시작 버튼이 클릭되었습니다!");
+        CMJPlayerEnime playerAnim = FindObjectOfType<CMJPlayerEnime>();
+
+        if (playerAnim != null)
+        {
+            playerAnim.SetCarrying(true);
+        }
 
         if (spawner == null)
         {

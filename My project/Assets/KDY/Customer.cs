@@ -80,6 +80,12 @@ public class Customer : MonoBehaviour
                 isMoving = false;
                 isSeated = true;
                 currentWaypointIndex++;
+                CMJNPCEnime npcAnim = GetComponent<CMJNPCEnime>();
+
+                if (npcAnim != null)
+                {
+                    npcAnim.SetSitting(true);
+                }
                 StartCoroutine(WaitAtSeat());
                 return;
             }
@@ -99,10 +105,20 @@ public class Customer : MonoBehaviour
     {
         isWaitingForFood = true;
         currentWaitTimer = maxWaitTime;
+        
+        CMJNPCEnime npcAnim = GetComponent<CMJNPCEnime>();
 
+        if (npcAnim != null)
+        {
+            npcAnim.SetSitting(true);
+        }
         // ★ 자리에 앉았을 때만 콜라이더를 켜서 클릭이 가능하게 만듭니다.
         Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = true;
+
+        if (col != null)
+        {
+            col.enabled = true;
+        }
 
         if (speechBubbleCanvas != null) speechBubbleCanvas.SetActive(true);
 
@@ -136,6 +152,13 @@ public class Customer : MonoBehaviour
 
     void StartLeaving()
     {
+        CMJNPCEnime npcAnim = GetComponent<CMJNPCEnime>();
+
+        if (npcAnim != null)
+        {
+            npcAnim.SetEating(false);
+            npcAnim.SetSitting(false);
+        }
         // ★ 나갈 때도 중복 클릭 방지를 위해 콜라이더를 끕니다.
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
@@ -156,6 +179,12 @@ public class Customer : MonoBehaviour
         if (servedItem == requestedItem)
         {
             isServed = true;
+            CMJNPCEnime npcAnim = GetComponent<CMJNPCEnime>();
+
+            if (npcAnim != null)
+            {
+                npcAnim.SetEating(true);
+            }
             isSeated = false;
             isWaitingForFood = false;
 

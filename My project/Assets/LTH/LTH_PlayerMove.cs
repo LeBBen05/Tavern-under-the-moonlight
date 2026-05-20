@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class LTH_PlayerMove : MonoBehaviour
 {
+    Rigidbody2D SMSrb;
     public float LTH_moveSpeed = 5f;
     private Vector3 LTH_targetPositon;
     public bool LTH_isMoving = false;
@@ -12,7 +13,7 @@ public class LTH_PlayerMove : MonoBehaviour
 
     void Start()
     {
-        
+        SMSrb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -21,7 +22,7 @@ public class LTH_PlayerMove : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             //클릭 했을 때 그 자리가 UI가 있다면
-            if(EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
@@ -33,11 +34,13 @@ public class LTH_PlayerMove : MonoBehaviour
 
         if (LTH_isMoving)
         {
-            transform.position = Vector3.MoveTowards(
-                transform.position,
+            Vector2 nextPosition = Vector2.MoveTowards(
+                SMSrb.position,
                 LTH_targetPositon,
-                LTH_moveSpeed * Time.deltaTime
+                LTH_moveSpeed * Time.fixedDeltaTime
             );
+            // 물리 엔진에게 계산된 다음 위치로 이동하라고 명령합니다. (벽 떨림 방지 핵심)
+            SMSrb.MovePosition(nextPosition);
 
             if (Vector3.Distance(transform.position, LTH_targetPositon) < 0.05f)
             {

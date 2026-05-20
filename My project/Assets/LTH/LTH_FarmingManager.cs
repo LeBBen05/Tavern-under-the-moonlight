@@ -23,7 +23,7 @@ public class LTH_FarmingManager : MonoBehaviour
         if (tile == null)
         {
             // 타일이 없는 곳(허공이나 다른 타일맵)이면 아무것도 하지 않고 리턴
-            Debug.Log("Tilemap field가 아닌 곳에는 심을 수 없습니다.");
+            //Debug.Log("Tilemap field가 아닌 곳에는 심을 수 없습니다.");
             return;
         }
 
@@ -47,6 +47,7 @@ public class LTH_FarmingManager : MonoBehaviour
 
     private void PlantSeed(Vector3Int cellPos, ItemData seedData)
     {
+
         // 1. 타일의 중심 위치를 가져오되, Z축은 반드시 0으로 맞춤 (카메라에 보이게 함)
         Vector3 spawnPos = groundTilemap.GetCellCenterWorld(cellPos);
         spawnPos.z = 0f;

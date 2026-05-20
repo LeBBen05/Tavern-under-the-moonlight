@@ -23,7 +23,7 @@ MonoBehaviour:
     RfishSize: 2
     amount: 1
   - rcqType: 0
-    requriedItem: {fileID: 11400000, guid: 723089afc7f57ad4b92b6dc0839f33b5, type: 2}
+    requriedItem: {fileID: 11400000, guid: 11cd2d2997a99f642a68239e342abeae, type: 2}
     RfishSize: 0
     amount: 2
   - rcqType: 0

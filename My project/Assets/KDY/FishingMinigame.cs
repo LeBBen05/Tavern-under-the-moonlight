@@ -137,9 +137,14 @@ public class FishingMinigame : MonoBehaviour
         if (successSlider.value >= 1f)
         {
             string name = currentFishData != null ? currentFishData.itemName : "물고기";
-            LTH_InventoryManager.Instance.AddItem(currentFishData, 1);
+            Te_InventoryManager.Instance.AddItem(currentFishData, 1);
             Debug.Log($"<color=green>{name} 포획 성공!</color>");
             FinishGame();
+            if (ItemNotificationPopup.Instance != null && currentFishData != null)
+            {
+                ItemNotificationPopup.Instance.TriggerPopup(currentFishData, 1);
+            }
+
         }
         else if (successSlider.value <= 0f)
         {

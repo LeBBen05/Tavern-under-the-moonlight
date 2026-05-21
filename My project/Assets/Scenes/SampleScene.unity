@@ -26635,7 +26635,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBar: {fileID: 174660086}
   fishIcon: {fileID: 958372072}
-  successSlider: {fileID: 0}
+  successSlider: {fileID: 59284712}
   panelHeight: 1000
   gravity: 800
   jumpForce: 900
@@ -26643,7 +26643,7 @@ MonoBehaviour:
   winSpeed: 0.5
   loseSpeed: 0.2
   hitMargin: 1.2
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1746457253}
   fishMoveSpeed: 0
   fishWaitTime: {x: 0, y: 0}
   startGaugeAmount: 0.5

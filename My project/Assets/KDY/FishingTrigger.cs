@@ -13,7 +13,7 @@ public class FishingTrigger : MonoBehaviour
 
     [Header("거리 제한 설정")]
     [Tooltip("낚시가 가능한 최대 거리입니다. (적정값: 1.5 ~ 2.5)")]
-    public float fishingRange = 2.0f;
+    public float fishingRange = 3.2f;
 
     void Update()
     {
